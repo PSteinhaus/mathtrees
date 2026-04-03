@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://bbkaka3ackf22"]
+
+[ext_resource type="Script" uid="uid://b28ox1t6t4rny" path="res://scripts/world.gd" id="1_nnsk1"]
+[ext_resource type="Script" uid="uid://bao8uj5b72l54" path="res://scripts/rt_tree.gd" id="2_rwgxs"]
+[ext_resource type="Script" uid="uid://dag5jq8aj6ti8" path="res://scripts/camera_2d.gd" id="3_4wyf3"]
+[ext_resource type="Script" uid="uid://dsrsute6c1tkj" path="res://scripts/debug_label.gd" id="4_k0juu"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_rwgxs"]
+center_offset = Vector3(0, 0.5, 0)
+
+[node name="Node" type="Node" unique_id=319881041]
+
+[node name="World" type="Node2D" parent="." unique_id=1498925971]
+script = ExtResource("1_nnsk1")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="World" unique_id=737727527]
+modulate = Color(0.18717614, 0.18717614, 0.18717614, 1)
+position = Vector2(540, 894)
+scale = Vector2(394235.28, 1169824.4)
+mesh = SubResource("QuadMesh_rwgxs")
+
+[node name="RT_Tree" type="Node2D" parent="World" unique_id=768663180]
+position = Vector2(540, 894)
+script = ExtResource("2_rwgxs")
+metadata/_custom_type_script = "uid://bao8uj5b72l54"
+
+[node name="Camera2D" type="Camera2D" parent="World" unique_id=217393849]
+position = Vector2(540, 889)
+script = ExtResource("3_4wyf3")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2022131504]
+
+[node name="DebugLabel" type="Label" parent="CanvasLayer" unique_id=1038649796]
+unique_name_in_owner = true
+offset_left = 13.0
+offset_top = 14.0
+offset_right = 382.0
+offset_bottom = 146.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+autowrap_mode = 3
+script = ExtResource("4_k0juu")
+
+[node name="Button_opt" type="Button" parent="CanvasLayer" unique_id=2041730127]
+offset_left = 805.0
+offset_top = 20.0
+offset_right = 919.0
+offset_bottom = 104.0
+text = "toggle
+optimize"
+
+[node name="Button_new" type="Button" parent="CanvasLayer" unique_id=2147152104]
+offset_left = 942.0
+offset_top = 20.0
+offset_right = 1056.0
+offset_bottom = 104.0
+text = "neu
+wachsen"
+
+[connection signal="pressed" from="CanvasLayer/Button_opt" to="World" method="_on_button_opt_pressed"]
+[connection signal="pressed" from="CanvasLayer/Button_new" to="World" method="_on_button_pressed"]

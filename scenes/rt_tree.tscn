@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dcpwwnvwia3w2"]
+
+[ext_resource type="Script" uid="uid://bao8uj5b72l54" path="res://scripts/rt_tree.gd" id="1_b0ih0"]
+
+[node name="RT_Tree" type="Node2D" unique_id=129778102]
+script = ExtResource("1_b0ih0")
