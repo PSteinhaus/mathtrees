@@ -1,10 +1,12 @@
 extends Node2D
+class_name World
 
 var is_touching := false
 var current_touch_screen
 const GROW_DELAY := .00
 var grow_cooldown := 0.
 var root_point_map := RootPointMap.new()
+var boulder_map := BoulderMap.new()
 @onready var current_tree: RT_Tree = $RT_Tree:
 	set(new_value):
 		# TODO: add a listener to the old tree merging points with other roots once the run and the optimization is through
@@ -38,7 +40,7 @@ func tween_merge_root_points(rt: RT_Tree, offset: int = 50):
 		var closest_point: Vector2 = root_point_map.closest_point(p, rt)
 		var dist = closest_point.distance_squared_to(p)
 		if dist < CLOSE_THRESHOLD && !to_merge_indices.has(i):
-			print("optimizing: "+str(i))
+			#print("optimizing: "+str(i))
 			to_merge_indices.push_back(i)
 			var c_point = rt.to_local(closest_point)
 			var tween := create_tween()
@@ -49,7 +51,7 @@ func tween_merge_root_points(rt: RT_Tree, offset: int = 50):
 				c_point,
 				1.0
 			)
-			print("c_point: "+str(c_point))
+			#print("c_point: "+str(c_point))
 
 func screen_to_world(screen_pos: Vector2) -> Vector2:
 	var cam := $Camera2D        # or get_viewport().get_camera_2d()
@@ -57,10 +59,21 @@ func screen_to_world(screen_pos: Vector2) -> Vector2:
 	return inv * screen_pos
 
 func _ready() -> void:
+	# register yourself as THE WORLD on the globalton
+	Global.set_world(self)
+	# initialize the boulders
+	Boulder.init_boulders(self)
+	
 	$RT_Tree.add_point(Vector2(0., 0.))
 	$RT_Tree.add_point(Vector2(120., 200.))
 	$RT_Tree.add_point(Vector2(-10., 300.))
 	$RT_Tree.add_point(Vector2(0., 350.))
+	
+	var root_pos = $RT_Tree.position
+	boulder_map.generate_boulder_at(root_pos + Vector2(200., 400.))
+	boulder_map.generate_boulder_at(root_pos + Vector2(0., 760.))
+	boulder_map.generate_boulder_at(root_pos + Vector2(-220., 450.))
+	boulder_map.generate_boulder_at(root_pos + Vector2(0., 500.))
 
 func set_root_point_global(index: int, p: Vector2):
 	var p_local = current_tree.to_local(p)
@@ -84,24 +97,39 @@ func grow_towards_touch(delta: float) -> void:
 	grow_cooldown = 0
 	var latest_point: Vector2 = latest_root_point_local()
 	# Convert from screen to world, then to target_node local
-	var current_touch_local = current_tree.to_local(screen_to_world(current_touch_screen))
+	var current_touch_global = screen_to_world(current_touch_screen)
+	var current_touch_local = current_tree.to_local(current_touch_global)
 	var grow_vec: Vector2 = current_touch_local - latest_point
 	# grow into the direction of the touch, but only as far as permitted per second
 	const GROW_PER_SECOND: float = 170.
+	const CLOSE_FACTOR: float = 4.
+	grow_vec = grow_vec.limit_length(delta * GROW_PER_SECOND * CLOSE_FACTOR * energy_grow_factor())
+	# also: stop if you hit a boulder
+	var end_temp_global = current_tree.to_global(latest_point + grow_vec)
+	var farthest_allowed_global = boulder_map.closest_allowed_point(latest_root_point_global(), end_temp_global)
+	var farthest_allowed_local = current_tree.to_local(farthest_allowed_global)
+	var skip_cost: bool = false
+	if farthest_allowed_global != end_temp_global:
+		grow_vec = farthest_allowed_local - latest_point
+		const GROW_LENGTH_THRESHOLD: float = 15.
+		# FIXME: don't know whether this is the best workaround
+		if grow_vec.length() < GROW_LENGTH_THRESHOLD:
+			skip_cost = true
 	# if you want to grow towards an already existing part of another root then you can have more max speed
 	var latest_point_global: Vector2 = latest_root_point_global()
-	const CLOSE_FACTOR: float = 4.
+	var energy_cost: float
 	if root_point_map.dist_to_closest_line_squared(latest_point_global, current_tree) < CLOSE_THRESHOLD:
-		grow_vec = grow_vec.limit_length(delta * GROW_PER_SECOND * CLOSE_FACTOR * energy_grow_factor())
 		const CLOSE_DRAIN_FACTOR: float = 0.7
-		energy -= grow_vec.length() * ENERGY_DRAIN_PER_LENGTH  * CLOSE_DRAIN_FACTOR
+		energy_cost = grow_vec.length() * ENERGY_DRAIN_PER_LENGTH  * CLOSE_DRAIN_FACTOR
 		# TODO: if the latest point is so close make it merge (via a tween) with the closest point and mark it as "to_merge"
 		# if the previous point is not "to_merge" (so this one is the first to merge), then keep it
 		# if the previous point is already "to_merge" delete the point entirely (later when the root is finished)
 		# while going through the "to_merge" points like this find the last "to_merge" point of the chain, and at that point attach the remaining root tail as a new RT_Tree 
 	else:
 		grow_vec = grow_vec.limit_length(delta * GROW_PER_SECOND * energy_grow_factor())
-		energy -= grow_vec.length() * ENERGY_DRAIN_PER_LENGTH
+		energy_cost = grow_vec.length() * ENERGY_DRAIN_PER_LENGTH
+	if not skip_cost:
+		energy -= energy_cost
 	
 	current_tree.root.default_color = energy_color()
 	current_tree.add_point(latest_point + grow_vec)
