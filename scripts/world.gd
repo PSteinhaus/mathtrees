@@ -19,7 +19,7 @@ var boulder_map := BoulderMap.new()
 		return current_tree
 
 var energy: float = 1.
-const ENERGY_DRAIN_PER_LENGTH: float = 0.0009
+const ENERGY_DRAIN_PER_LENGTH: float = 0.0006
 
 func energy_grow_factor() -> float:
 	return 1 - ((1 - energy) * 0.98) ** 1.5
@@ -70,10 +70,60 @@ func _ready() -> void:
 	$RT_Tree.add_point(Vector2(0., 350.))
 	
 	var root_pos = $RT_Tree.position
-	boulder_map.generate_boulder_at(root_pos + Vector2(200., 400.))
-	boulder_map.generate_boulder_at(root_pos + Vector2(0., 760.))
-	boulder_map.generate_boulder_at(root_pos + Vector2(-220., 450.))
-	boulder_map.generate_boulder_at(root_pos + Vector2(0., 500.))
+	# generate some random boulders, most farther away and bigger
+	for i in range(5000):
+		var r = randf()
+		var radius = 2500. - (r ** 20) * 2500. + 500.
+		var size = radius * 0.0015
+		var angle = randf_range(0., PI)
+		var x = radius * cos(angle)
+		var y = radius * sin(angle)
+		boulder_map.generate_boulder_at(root_pos + Vector2(x, y), size)
+		
+	#boulder_map.generate_boulder_at(root_pos + Vector2(200., 400.))
+	#boulder_map.generate_boulder_at(root_pos + Vector2(0., 760.))
+	#boulder_map.generate_boulder_at(root_pos + Vector2(-220., 450.))
+	#boulder_map.generate_boulder_at(root_pos + Vector2(0., 500.))
+	
+	# create the tree that grows upwards
+	$RT_Tree_Up.position = root_pos
+	$RT_Tree_Up.add_point(Vector2(0., 0.))
+	$RT_Tree_Up.add_point(Vector2(0., -100.))
+	# add branches
+	var branch0 = RT_Tree.new()
+	var branch1 = RT_Tree.new()
+	$RT_Tree_Up.add_rt_child(branch0, 1)
+	$RT_Tree_Up.add_rt_child(branch1, 1)
+	branch0.add_point(Vector2(0., 0.))
+	branch0.add_point(Vector2(-40., -50.))
+	branch1.add_point(Vector2(0., 0.))
+	branch1.add_point(Vector2(50., -50.))
+	branch1.add_point(Vector2(80., -160.))
+	#var branch2 = RT_Tree.new()
+	#var branch3 = RT_Tree.new()
+	#branch1.add_rt_child(branch2, 1)
+	#branch1.add_rt_child(branch3, 1)
+	#branch2.add_point(Vector2(0., 0.), false)
+	#branch2.add_point(Vector2(30., -50.), false)
+	#branch3.add_point(Vector2(0., 0.), false)
+	#branch3.add_point(Vector2(-30., -50.), false)
+	var g_scale = Vector2(0.6, 0.6)
+	$RT_Tree_Up.grow_recursively(g_scale)
+	for c in $RT_Tree_Up.rt_children:
+		c.grow_recursively(g_scale)
+	for c in $RT_Tree_Up.rt_children:
+		for c0 in c.rt_children:
+			c0.grow_recursively(g_scale)
+	for c in $RT_Tree_Up.rt_children:
+		for c0 in c.rt_children:
+			for c1 in c0.rt_children:
+				c1.grow_recursively(g_scale)
+	for c in $RT_Tree_Up.rt_children:
+		for c0 in c.rt_children:
+			for c1 in c0.rt_children:
+				for c2 in c1.rt_children:
+					c2.grow_recursively(g_scale)
+	$RT_Tree_Up.scale *= 1.8
 
 func set_root_point_global(index: int, p: Vector2):
 	var p_local = current_tree.to_local(p)

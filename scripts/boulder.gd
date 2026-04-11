@@ -61,7 +61,7 @@ static func init_boulders(parent: Node2D):
 		shader_type canvas_item;
 
 		void fragment() {
-			COLOR = vec4(0.0, 0.0, 0.0, 1.0); // solid black
+			COLOR = vec4(0.0, 0.0, 0.2, 1.0); // solid black
 		}
 	"""
 

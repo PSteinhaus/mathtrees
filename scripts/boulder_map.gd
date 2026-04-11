@@ -63,8 +63,8 @@ func closest_allowed_point(start: Vector2, end: Vector2) -> Vector2:
 	return closest_point
 
 ## pos in global coords
-func generate_boulder_at(pos: Vector2):
-	var s = 3. * randf()
+func generate_boulder_at(pos: Vector2, size: float = 1.5):
+	var s = size
 	var b = Boulder.generate_at(pos, TAU * randf(), Vector2(s, s))
 	update_boulder(b)
 

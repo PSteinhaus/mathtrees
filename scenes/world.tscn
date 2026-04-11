@@ -14,13 +14,18 @@ center_offset = Vector3(0, 0.5, 0)
 script = ExtResource("1_nnsk1")
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="World" unique_id=737727527]
-modulate = Color(0.18717614, 0.18717614, 0.18717614, 1)
+modulate = Color(0.18398687, 0.20137545, 0.32369912, 1)
 position = Vector2(540, 894)
 scale = Vector2(394235.28, 1169824.4)
 mesh = SubResource("QuadMesh_rwgxs")
 
 [node name="RT_Tree" type="Node2D" parent="World" unique_id=768663180]
 position = Vector2(540, 894)
+script = ExtResource("2_rwgxs")
+metadata/_custom_type_script = "uid://bao8uj5b72l54"
+
+[node name="RT_Tree_Up" type="Node2D" parent="World" unique_id=465707927]
+position = Vector2(1080, 1788)
 script = ExtResource("2_rwgxs")
 metadata/_custom_type_script = "uid://bao8uj5b72l54"
 
