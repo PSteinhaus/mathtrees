@@ -19,15 +19,15 @@ position = Vector2(540, 894)
 scale = Vector2(394235.28, 1169824.4)
 mesh = SubResource("QuadMesh_rwgxs")
 
-[node name="RT_Tree" type="Node2D" parent="World" unique_id=768663180]
-position = Vector2(540, 894)
-script = ExtResource("2_rwgxs")
-metadata/_custom_type_script = "uid://bao8uj5b72l54"
-
 [node name="RT_Tree_Up" type="Node2D" parent="World" unique_id=465707927]
 position = Vector2(1080, 1788)
 script = ExtResource("2_rwgxs")
-sway_frequency = 0.1
+sway_frequency = 0.2
+metadata/_custom_type_script = "uid://bao8uj5b72l54"
+
+[node name="RT_Tree" type="Node2D" parent="World" unique_id=768663180]
+position = Vector2(540, 894)
+script = ExtResource("2_rwgxs")
 metadata/_custom_type_script = "uid://bao8uj5b72l54"
 
 [node name="Camera2D" type="Camera2D" parent="World" unique_id=217393849]

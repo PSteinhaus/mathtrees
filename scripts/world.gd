@@ -20,7 +20,7 @@ var boulder_map := BoulderMap.new()
 		return current_tree
 
 var energy: float = 1.
-const ENERGY_DRAIN_PER_LENGTH: float = 0.0006
+const ENERGY_DRAIN_PER_LENGTH: float = 0.0004
 
 func energy_grow_factor() -> float:
 	return 1 - ((1 - energy) * 0.98) ** 1.5
@@ -65,6 +65,27 @@ func camera_global_rect() -> Rect2:
 	var top_left = center - half_size
 	return Rect2(top_left, half_size * 2.)
 
+## initial boulder generation for the whole world (for now)
+func generate_boulders():
+	const WORLD_RADIUS: float = 18000.	# how far to each side boulders should be generated
+	const CHUNK_SIZE: float = 128.
+	const START_X: int = int(-WORLD_RADIUS / CHUNK_SIZE)
+	const END_X: int = int(WORLD_RADIUS / CHUNK_SIZE)
+	const START_Y: int = 0
+	const END_Y: int = int(WORLD_RADIUS / CHUNK_SIZE)
+	var root_pos = $RT_Tree.position
+	for chunk_x in range(START_X, END_X + 1):
+		for chunk_y in range(START_Y, END_Y + 1):
+			if chunk_y < 4 && abs(chunk_x) < 3:
+				continue
+			# in each of these chunks spawn some boulders
+			var b_count: int = int(randf() * 2.)
+			for i in range(b_count):
+				var x: float = chunk_x * CHUNK_SIZE + randf() * CHUNK_SIZE
+				var y: float = chunk_y * CHUNK_SIZE + randf() * CHUNK_SIZE
+				var size: float = randf_range(0.5, 3.)
+				boulder_map.generate_boulder_at(root_pos + Vector2(x, y), size)
+
 func _ready() -> void:
 	# register yourself as THE WORLD on the globalton
 	Global.set_world(self)
@@ -78,14 +99,7 @@ func _ready() -> void:
 	
 	var root_pos = $RT_Tree.position
 	# generate some random boulders, most farther away and bigger
-	for i in range(5000):
-		var r = randf()
-		var radius = 2500. - (r ** 20) * 2500. + 500.
-		var size = radius * 0.0015
-		var angle = randf_range(0., PI)
-		var x = radius * cos(angle)
-		var y = radius * sin(angle)
-		boulder_map.generate_boulder_at(root_pos + Vector2(x, y), size)
+	generate_boulders()
 		
 	#boulder_map.generate_boulder_at(root_pos + Vector2(200., 400.))
 	#boulder_map.generate_boulder_at(root_pos + Vector2(0., 760.))
@@ -200,6 +214,9 @@ func grow_towards_touch(delta: float) -> void:
 		grow_vec = grow_vec.limit_length(delta * GROW_PER_SECOND * energy_grow_factor())
 		energy_cost = grow_vec.length() * ENERGY_DRAIN_PER_LENGTH
 	if not skip_cost:
+		if latest_point_global.y < $RT_Tree.position.y:
+			const AIR_PENALTY: float = 12.
+			energy_cost *= AIR_PENALTY
 		energy -= energy_cost
 	
 	current_tree.root.default_color = energy_color()

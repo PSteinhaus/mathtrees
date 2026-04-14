@@ -26,9 +26,9 @@ func sway_in_the_wind() -> void:
 	if sway_frequency != 0.:
 		# if the rotation was changed from outside adapt to that
 		var cache_based_rotation = cached_rotation + cached_rot_offset
-		if cache_based_rotation - rotation > 0.000001:
+		if cache_based_rotation - rotation > 0.00001:
 			cached_rotation = rotation
-		const ROT_MAX_OFFSET: float = 0.05
+		const ROT_MAX_OFFSET: float = 0.08
 		var rot_offset = ROT_MAX_OFFSET * sin(sway_frequency * 0.001 * Time.get_ticks_msec() + depth * 0.6)
 		rotation = cached_rotation + rot_offset
 		cached_rot_offset = rot_offset
