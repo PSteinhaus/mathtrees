@@ -41,8 +41,8 @@ func rect_boulders(global_rect: Rect2) -> Array[Boulder]:
 	var end: Vector2i = global_to_coordinate(global_rect.end)
 	# go through the chunk and all 8 surrounding ones and collect all boulders
 	var c_boulders: Array[Boulder] = []
-	for x: int in range(start.x-2, end.x+3):
-		for y: int in range(start.y-2, end.y+3):
+	for x: int in range(start.x-1, end.x+2):
+		for y: int in range(start.y-1, end.y+2):
 			var coords = Vector2i(x,y)
 			if not map.has(coords): continue
 			var boulders = map[coords]

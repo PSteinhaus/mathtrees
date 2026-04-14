@@ -59,8 +59,11 @@ func screen_to_world(screen_pos: Vector2) -> Vector2:
 	return inv * screen_pos
 
 func camera_global_rect() -> Rect2:
-	var screen_rect: Rect2 = camera.get_viewport().get_visible_rect()
-	return Rect2(screen_to_world(screen_rect.position), screen_to_world(screen_rect.size))
+	var viewport_size = camera.get_viewport_rect().size
+	var half_size = viewport_size * 0.5 * camera.zoom
+	var center = camera.global_position
+	var top_left = center - half_size
+	return Rect2(top_left, half_size * 2.)
 
 func _ready() -> void:
 	# register yourself as THE WORLD on the globalton
