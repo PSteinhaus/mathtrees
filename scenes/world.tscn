@@ -27,6 +27,7 @@ metadata/_custom_type_script = "uid://bao8uj5b72l54"
 [node name="RT_Tree_Up" type="Node2D" parent="World" unique_id=465707927]
 position = Vector2(1080, 1788)
 script = ExtResource("2_rwgxs")
+sway_frequency = 0.1
 metadata/_custom_type_script = "uid://bao8uj5b72l54"
 
 [node name="Camera2D" type="Camera2D" parent="World" unique_id=217393849]

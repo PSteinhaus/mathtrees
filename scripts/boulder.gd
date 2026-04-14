@@ -4,11 +4,9 @@ class_name Boulder
 static var multimesh_instances: Array[MultiMeshInstance2D]
 static var multimesh_instance_poly_points: Array[PackedVector2Array]
 var mm_index: int
-var instance_index: int
 ## these have to be here because these infos are only represented as a transform of an instance
 ## inside an mm when the boulder is actually visible, so we need to store them here as well to be
 ## able to restore them
-# TODO: actually optimize stuff like this, so that only the boulders currently on screen are drawn
 var position: Vector2
 var rotation: float
 var scale: Vector2
@@ -25,16 +23,18 @@ func _process(_delta: float) -> void:
 func multimesh():
 	return multimesh_instances[mm_index].multimesh
 
+func transform2D() -> Transform2D:
+	return Transform2D(rotation, scale, 0., position)
+
 ## get the points making up this boulder (its mesh) oriented the way it is in global coordinates
 ## this means rotation, position and possibly scaling is already factored in
 func points() -> PackedVector2Array:
-	var transform = multimesh().get_instance_transform_2d(instance_index)
 	var poly_points = multimesh_instance_poly_points[mm_index]
 	var result := PackedVector2Array()
 	result.resize(poly_points.size())
 
 	for i in poly_points.size():
-		result[i] = transform * poly_points[i]
+		result[i] = transform2D() * poly_points[i]
 	return result
 
 ## adds a boulder at the specified position and rotation
@@ -44,15 +44,34 @@ static func generate_at(pos: Vector2, rot: float, s: Vector2) -> Boulder:
 	# pick one of the boulder types (represented by the multimesh_instances) at random
 	var b = Boulder.new()
 	b.mm_index = randi() % multimesh_instances.size()
-	var mmi = multimesh_instances[b.mm_index]
-	var mm = mmi.multimesh
-	var i = mm.instance_count
-	b.instance_index = i
-	Helpers.push_back_instance_in_multimesh(mm, Transform2D(rot, s, 0., pos))
 	b.position = pos
 	b.scale = s
 	b.rotation = rot
 	return b
+
+## makes the given boulders actually visible, by updating the multimesh buffers
+static func set_visible_boulders(boulders: Array[Boulder]):
+	# create the transform for each boulder and collect them, sorted for each multimesh
+	var transforms_indices = []
+	var transforms = []
+	for i in range(0, multimesh_instances.size()):
+		var a: Array[Transform2D] = []
+		a.resize(boulders.size()) # reserve space to optimize
+		transforms.push_back(a)
+		transforms_indices.push_back(0)
+	for b: Boulder in boulders:
+		transforms[b.mm_index][transforms_indices[b.mm_index]] = Transform2D(b.rotation, b.scale, 0., b.position)
+		transforms_indices[b.mm_index] += 1
+	for i in range(0, multimesh_instances.size()):
+		var mm_boulder_count = transforms_indices[i]
+		var mm: MultiMesh = multimesh_instances[i].multimesh
+		if mm.instance_count < mm_boulder_count:
+			print("resized "+str(i)+" to: "+str(mm_boulder_count))
+			mm.instance_count = mm_boulder_count
+		# update visible instance count for each multimesh so that only those are drawn
+		mm.visible_instance_count = mm_boulder_count
+		# actually calc and push the new buffer
+		Helpers.set_multimesh_transforms_2d(mm, transforms[i], mm_boulder_count)
 
 static func init_boulders(parent: Node2D):
 	# Create shader material for solid black color

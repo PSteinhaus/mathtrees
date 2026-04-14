@@ -2,6 +2,7 @@ extends Node2D
 class_name World
 
 var is_touching := false
+@onready var camera: Camera2D = $Camera2D
 var current_touch_screen
 const GROW_DELAY := .00
 var grow_cooldown := 0.
@@ -54,9 +55,12 @@ func tween_merge_root_points(rt: RT_Tree, offset: int = 50):
 			#print("c_point: "+str(c_point))
 
 func screen_to_world(screen_pos: Vector2) -> Vector2:
-	var cam := $Camera2D        # or get_viewport().get_camera_2d()
-	var inv = cam.get_canvas_transform().affine_inverse()
+	var inv = camera.get_canvas_transform().affine_inverse()
 	return inv * screen_pos
+
+func camera_global_rect() -> Rect2:
+	var screen_rect: Rect2 = camera.get_viewport().get_visible_rect()
+	return Rect2(screen_to_world(screen_rect.position), screen_to_world(screen_rect.size))
 
 func _ready() -> void:
 	# register yourself as THE WORLD on the globalton
@@ -124,6 +128,8 @@ func _ready() -> void:
 				for c2 in c1.rt_children:
 					c2.grow_recursively(g_scale)
 	$RT_Tree_Up.scale *= 1.8
+	
+	_update_touch_local(camera.get_screen_center_position())
 
 func set_root_point_global(index: int, p: Vector2):
 	var p_local = current_tree.to_local(p)
@@ -137,8 +143,20 @@ func _process(delta: float) -> void:
 	grow_cooldown -= delta
 	if is_touching && grow_cooldown <= 0 && current_tree != null:
 		grow_towards_touch(delta)
-		
+	# make sure only visible boulders are drawn
+	update_visible_boulders()
+	
 	Global.debug_print_string = str(current_tree.root.get_point_count()) + "\n" + str($RT_Tree.point_count_with_children())
+
+var cached_boulder_rect = null
+func update_visible_boulders():
+	var c_rect = camera_global_rect()
+	var boulder_rect = Rect2i(boulder_map.global_to_coordinate(c_rect.position), boulder_map.global_to_coordinate(c_rect.size))
+	if boulder_rect != cached_boulder_rect:
+		print("RECALC "+str(randi()))
+		var visible_boulders = boulder_map.rect_boulders(c_rect)
+		Boulder.set_visible_boulders(visible_boulders)
+		cached_boulder_rect = boulder_rect
 
 const CLOSE_THRESHOLD: float = 50. ** 2
 func grow_towards_touch(delta: float) -> void:
@@ -202,11 +220,11 @@ func _update_touch_local(screen_pos: Vector2) -> void:
 	var global_pos = screen_to_world(screen_pos)
 	var latest_point = latest_root_point_global()
 	if latest_point == null:
-		$Camera2D.target = global_pos
+		camera.target = global_pos
 		return
 	var diff: Vector2 = global_pos - latest_point
 	const MAX_DIFF: float = 150.
-	$Camera2D.target = latest_point + diff.limit_length(MAX_DIFF)
+	camera.target = latest_point + diff.limit_length(MAX_DIFF)
 
 func _on_button_pressed() -> void:
 	# add the now finished root to the root map:
@@ -216,7 +234,7 @@ func _on_button_pressed() -> void:
 	current_tree = RT_Tree.new()
 	$RT_Tree.add_rt_child(current_tree, 0)
 	current_tree.add_point(Vector2.ZERO)
-	$Camera2D.target = $RT_Tree.global_position
+	camera.target = $RT_Tree.global_position
 
 
 func _on_button_opt_pressed() -> void:

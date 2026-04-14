@@ -28,9 +28,28 @@ func close_boulders(c0: Vector2i) -> Array[Boulder]:
 			var coords = Vector2i(x,y)
 			if not map.has(coords): continue
 			var boulders = map[coords]
-			for b: Boulder in boulders:
-				if !c_boulders.has(b):
-					c_boulders.push_back(b)
+			c_boulders.append_array(boulders)
+			#for b: Boulder in boulders:
+				#if !c_boulders.has(b):
+					#c_boulders.push_back(b)
+	return c_boulders
+
+## boulders that are contained in the given area
+func rect_boulders(global_rect: Rect2) -> Array[Boulder]:
+	# translate the rect into coordinates
+	var start: Vector2i = global_to_coordinate(global_rect.position)
+	var end: Vector2i = global_to_coordinate(global_rect.end)
+	# go through the chunk and all 8 surrounding ones and collect all boulders
+	var c_boulders: Array[Boulder] = []
+	for x: int in range(start.x-2, end.x+3):
+		for y: int in range(start.y-2, end.y+3):
+			var coords = Vector2i(x,y)
+			if not map.has(coords): continue
+			var boulders = map[coords]
+			c_boulders.append_array(boulders)
+			#for b: Boulder in boulders:
+				#if !c_boulders.has(b):
+					#c_boulders.push_back(b)
 	return c_boulders
 
 ## comparison points must be in global space

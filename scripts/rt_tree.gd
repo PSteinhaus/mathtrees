@@ -2,9 +2,13 @@ extends Node2D
 class_name RT_Tree
 
 @export var root: Line2D
+var depth: int = 0	# depth inside the tree (how many parents are above)
 var rt_children: Dictionary[RT_Tree, int] = {}
 signal optimize_finished
 var is_optimized: bool = false
+@export var sway_frequency: float = 0.	# 0 means the tree does not sway (in an imaginary breeze)
+var cached_rotation: float = 0.
+var cached_rot_offset: float = 0.
 
 func clone() -> RT_Tree:
 	var copy = RT_Tree.new()
@@ -17,6 +21,17 @@ func clone() -> RT_Tree:
 		var child_copy = rt_child.clone()
 		copy.add_rt_child(child_copy, index)
 	return copy
+
+func sway_in_the_wind() -> void:
+	if sway_frequency != 0.:
+		# if the rotation was changed from outside adapt to that
+		var cache_based_rotation = cached_rotation + cached_rot_offset
+		if cache_based_rotation - rotation > 0.000001:
+			cached_rotation = rotation
+		const ROT_MAX_OFFSET: float = 0.05
+		var rot_offset = ROT_MAX_OFFSET * sin(sway_frequency * 0.001 * Time.get_ticks_msec() + depth * 0.6)
+		rotation = cached_rotation + rot_offset
+		cached_rot_offset = rot_offset
 
 func _ready() -> void:
 	if root == null:
@@ -47,6 +62,7 @@ var opt_cooldown: float = 0.
 var optimization_activated: bool = false
 var opt_strikes: int = 0
 func _process(delta: float) -> void:
+	sway_in_the_wind()
 	if optimization_activated:
 		opt_cooldown -= delta
 		const OPTIMIZE_COOLDOWN: float = 0.22
@@ -90,6 +106,10 @@ func add_rt_child(child: RT_Tree, index: int) -> void:
 	# Position the child at the chosen root point
 	var start_pos: Vector2 = root.points[index]
 	child.position = start_pos
+	# propagate sway
+	child.sway_frequency = sway_frequency
+	# set child depth
+	child.depth = depth + 1
 
 	# Store in dictionary and add as a child node in the scene tree.
 	rt_children[child] = index
@@ -113,7 +133,7 @@ func optimize(include_children: bool, max_points: int = -1, in_place: bool = tru
 		push_warning("RT_Tree: root is not assigned.")
 		return
 	
-	var points: PackedVector2Array = root.points	# get the points of the current Line2D as a copy
+	var root_points: PackedVector2Array = root.points	# get the points of the current Line2D as a copy
 	var new_points: PackedVector2Array = PackedVector2Array()
 	var indices_to_delete: Array[int] = []
 	var skip: bool = false
@@ -129,23 +149,23 @@ func optimize(include_children: bool, max_points: int = -1, in_place: bool = tru
 			return max(acc, x)
 		)
 	if max_points >= 0:
-		start_index = clamp(points.size() - max_points, start_index, points.size())
+		start_index = clamp(root_points.size() - max_points, start_index, root_points.size())
 		# make sure all points up to there are contained in the new_points
 		if not in_place:
-			new_points.append_array(points.slice(0,start_index))
+			new_points.append_array(root_points.slice(0,start_index))
 	# iterate over all points following the start_index to check them for optimization
-	var p0: Vector2 = points[start_index]	# current
+	var p0: Vector2 = root_points[start_index]	# current
 	new_points.push_back(p0)
 	#print("points before: "+str(points.size()))
-	for i: int in (points.size() - start_index - 2):
+	for i: int in (root_points.size() - start_index - 2):
 		var j: int = start_index + i
 		if skip:
 			skip = false
 			continue
 		#print("j: "+str(j))
 		# get the two following points
-		var p1: Vector2 = points[j+1]	# first
-		var p2: Vector2 = points[j+2]	# second
+		var p1: Vector2 = root_points[j+1]	# first
+		var p2: Vector2 = root_points[j+2]	# second
 		# calculate how far the first point strays from the line between the current and the second point
 		var distance_squared: float = Helpers.dist_to_line_squared(p0, p1, p2)
 		# if the distance is larger than the required threshold, keep p1, else lose it by continuing with p2
@@ -167,7 +187,7 @@ func optimize(include_children: bool, max_points: int = -1, in_place: bool = tru
 			root.remove_point(i)
 	else:
 		# re-add the final point of the path
-		new_points.push_back(points[-1]) 
+		new_points.push_back(root_points[-1]) 
 		root.points = new_points
 	
 	#print("points after: "+str(root.points.size()))
@@ -210,7 +230,6 @@ func root_tip_direction() -> float:
 		var last_point = root.points[root_size - 1]
 		var previous_point = root.points[root_size - 2]
 		var local_direction = (last_point - previous_point).angle() + PI / 2.
-		var global_root_direction = root.global_rotation
 		return local_direction
 	else:
 		return 0. 
@@ -229,36 +248,3 @@ func get_leaves() -> Dictionary[RT_Tree, int]:
 		var child_leaves = rt_child.get_leaves()
 		leaves.merge(child_leaves)
 	return leaves
-
-## Applies a lambda to the widths of points, optionally recursing into rt_children.
-func apply_widths(func_lambda: Callable, include_children: bool = true, force_update: bool = false) -> void:
-	if root == null:
-		push_warning("RT_Tree: root is not assigned.")
-		return
-
-	var points: PackedVector2Array = root.points
-	var count: int = points.size()
-	if count == 0:
-		return
-
-	# Decide how many points to update.
-	var start_idx := 0
-	const MAX_UPDATED_NODES := 100
-	if not force_update and count > MAX_UPDATED_NODES:
-		start_idx = count - MAX_UPDATED_NODES
-
-	# Example assumption: lambda takes (index: int, global_index: int) or (index: int) and returns a width (float).
-	# Adjust the call signature to your actual needs.
-	# FIXME: this currently makes no sense, as the width of a 2DLine is just a single float... the code is only kept here in case I ever build a custom thing based on MultiMeshInstance instead of 2DLine
-	for i in range(start_idx, count):
-		var width_val = func_lambda.call(i, count)
-		# Line2D has a single width property, and optionally a per-point width array in Godot 4 via the 'width' and 'width_curve',
-		# so here we just set the global width. Adapt if you store widths differently.[web:1][web:7]
-		if typeof(width_val) == TYPE_FLOAT or typeof(width_val) == TYPE_INT:
-			root.width = float(width_val)
-
-	# Optionally recurse into children.
-	if include_children:
-		for child in rt_children.keys():
-			if child != null:
-				child.apply_widths(func_lambda, include_children, force_update)

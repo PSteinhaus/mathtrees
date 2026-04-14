@@ -26,3 +26,32 @@ static func push_back_instance_in_multimesh(mm: MultiMesh, transform: Transform2
 
 	# Add new instance at the end
 	mm.set_instance_transform_2d(old_count, transform)
+
+## DOESN'T SET THE instance_count! It is your responsibility to make sure that the space fits!
+static func set_multimesh_transforms_2d(multimesh: MultiMesh, transforms: Array[Transform2D], t_count: int) -> void:
+#	var count = multimesh.instance_count
+	# 8 floats per Transform2D
+	#var data := PackedFloat32Array()
+	#data.resize(count * 8)
+
+	for i in t_count:
+		var t: Transform2D = transforms[i]
+		multimesh.set_instance_transform_2d(i, t)
+		#var base := i * 8
+#
+		## Godot Transform2D structure:
+		## [ x.x, x.y, y.x, y.y, origin.x, origin.y, 0, 0 ]
+#
+		#data[base + 0] = t.x.x
+		#data[base + 1] = t.x.y
+		#data[base + 2] = t.y.x
+		#data[base + 3] = t.y.y
+#
+		#data[base + 4] = t.origin.x
+		#data[base + 5] = t.origin.y
+
+		# Padding
+		#data[base + 6] = 0.0
+		#data[base + 7] = 0.0
+
+#	multimesh.buffer = data
