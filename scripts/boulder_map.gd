@@ -87,6 +87,13 @@ func generate_boulder_at(pos: Vector2, size: float = 1.5):
 	var b = Boulder.generate_at(pos, TAU * randf(), Vector2(s, s))
 	update_boulder(b)
 
+## pos in global coords
+func generate_power_boulder_at(pos: Vector2, size: float = 1.5, variant: PowerupNode.PowerupVariant = PowerupNode.PowerupVariant.ENERGY):
+	var s = size
+	var b = BoulderPowerup.generate_at(pos, TAU * randf(), Vector2(s, s))
+	b.init_powerup(variant)
+	update_boulder(b)
+
 func update_boulder(b: Boulder):
 	# first delete the area from the map by checking the reverse_map:
 	if reverse_map.has(b):

@@ -11,10 +11,11 @@ var position: Vector2
 var rotation: float
 var scale: Vector2
 
+const VARIANT_COUNT: int = 4
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
-
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
@@ -37,17 +38,24 @@ func points() -> PackedVector2Array:
 		result[i] = transform2D() * poly_points[i]
 	return result
 
-## adds a boulder at the specified position and rotation
-## Warning: this clears a multimesh buffer, so at high boulder counts generating necessary boulders
-## at once (if multiple additional are required) would be faster
+static func mmi_index_range() -> Vector2i:
+	return Vector2i(0, VARIANT_COUNT - 1)
+
+## creates a boulder to add at the specified position and rotation
 static func generate_at(pos: Vector2, rot: float, s: Vector2) -> Boulder:
-	# pick one of the boulder types (represented by the multimesh_instances) at random
 	var b = Boulder.new()
-	b.mm_index = randi() % multimesh_instances.size()
-	b.position = pos
-	b.scale = s
-	b.rotation = rot
+	# pick one of the boulder types (represented by the multimesh_instances) at random
+	# BUT: 0 to VARIANT_COUNT - 1 are regular boulders, VARIANT_COUNT to 2 * VARIANT_COUNT - 1 are powerup
+	var i_range = mmi_index_range()
+	var mm_i = randi_range(i_range[0], i_range[1])
+	b.set_props(pos, rot, s, mm_i)
 	return b
+
+func set_props(pos: Vector2, rot: float, s: Vector2, mm_i: int):
+	self.mm_index = mm_i
+	self.position = pos
+	self.scale = s
+	self.rotation = rot
 
 ## makes the given boulders actually visible, by updating the multimesh buffers
 static func set_visible_boulders(boulders: Array[Boulder]):
@@ -80,29 +88,45 @@ static func init_boulders(parent: Node2D):
 		shader_type canvas_item;
 
 		void fragment() {
-			COLOR = vec4(0.0, 0.0, 0.2, 1.0); // solid black
+			COLOR = vec4(0.0, 0.0, 0.2, 1.0); 
+		}
+	"""
+	var shader_powerup := Shader.new()
+	shader_powerup.code = """
+		shader_type canvas_item;
+		
+		void fragment() {
+			COLOR = vec4(0.1, 0.1, 0.3, 1.);
 		}
 	"""
 
 	var black_material := ShaderMaterial.new()
 	black_material.shader = shader
+	var power_material := ShaderMaterial.new()
+	power_material.shader = shader_powerup
 	
 	multimesh_instances = []
 	multimesh_instance_poly_points = []
-	for i in range(4):
-		var multimesh_instance := MultiMeshInstance2D.new()
-		multimesh_instance.material = black_material
-		var new_multimesh = MultiMesh.new()
-		new_multimesh.transform_format = MultiMesh.TRANSFORM_2D
-		var mesh_points = generate_poly_points()
-		var mesh = create_convex_polygon_mesh_2d(mesh_points)
-		new_multimesh.mesh = mesh
-		multimesh_instance.multimesh = new_multimesh
-		multimesh_instances.push_back(multimesh_instance)
-		# cache the poly points in this array, as we will use them extensively
-		# and re-calculating them from the generated mesh is awkward
-		multimesh_instance_poly_points.push_back(mesh_points)
-		parent.add_child(multimesh_instance)
+	for i in range(VARIANT_COUNT):
+		generate_boulder_multimesh(black_material, parent)
+	# generate powerup-boulder-mmis as well
+	for i in range(VARIANT_COUNT):
+		generate_boulder_multimesh(power_material, parent)
+
+static func generate_boulder_multimesh(mat: Material, parent: Node2D):
+	var multimesh_instance := MultiMeshInstance2D.new()
+	multimesh_instance.material = mat
+	var new_multimesh = MultiMesh.new()
+	new_multimesh.transform_format = MultiMesh.TRANSFORM_2D
+	var mesh_points = generate_poly_points()
+	var mesh = create_convex_polygon_mesh_2d(mesh_points)
+	new_multimesh.mesh = mesh
+	multimesh_instance.multimesh = new_multimesh
+	multimesh_instances.push_back(multimesh_instance)
+	# cache the poly points in this array, as we will use them extensively
+	# and re-calculating them from the generated mesh is awkward
+	multimesh_instance_poly_points.push_back(mesh_points)
+	parent.add_child(multimesh_instance)
 
 static func generate_poly_points(radius: float = 50.0) -> PackedVector2Array:
 	# Choose number of sides randomly

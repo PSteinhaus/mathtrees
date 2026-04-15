@@ -30,7 +30,7 @@ func energy_color() -> Color:
 # TODO: use this
 var to_merge_indices = []
 
-static var opt_enabled: bool = true
+static var opt_enabled: bool = false
 func tween_merge_root_points(rt: RT_Tree, offset: int = 50):
 	if not opt_enabled: return
 	var points = rt.points()
@@ -85,6 +85,12 @@ func generate_boulders():
 				var y: float = chunk_y * CHUNK_SIZE + randf() * CHUNK_SIZE
 				var size: float = randf_range(0.5, 3.)
 				boulder_map.generate_boulder_at(root_pos + Vector2(x, y), size)
+			# also place some energy boulders
+			if randi_range(0, 100) < 2:
+				var x: float = chunk_x * CHUNK_SIZE + randf() * CHUNK_SIZE
+				var y: float = chunk_y * CHUNK_SIZE + randf() * CHUNK_SIZE
+				var size: float = randf_range(0.8, 1.2)
+				boulder_map.generate_power_boulder_at(root_pos + Vector2(x, y), size, PowerupNode.PowerupVariant.SPEED)
 
 func _ready() -> void:
 	# register yourself as THE WORLD on the globalton
