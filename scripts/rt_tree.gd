@@ -88,8 +88,20 @@ func add_point(pos: Vector2, opt: bool = true) -> void:
 	is_optimized = false
 	optimization_activated = opt
 
+## The points making up the root in local coordinates
 func points() -> PackedVector2Array:
 	return root.points
+
+## The points making up the root in local coordinates
+func points_global() -> PackedVector2Array:
+	var ps: PackedVector2Array = points()
+	var g_ps: PackedVector2Array = []
+	g_ps.resize(ps.size())
+	var i: int = 0
+	for p in ps:
+		g_ps[i] = root.to_global(p)
+		i += 1
+	return g_ps
 
 func add_rt_child(child: RT_Tree, index: int) -> void:
 	# Attaches a child RT_Tree starting at a point of the root.

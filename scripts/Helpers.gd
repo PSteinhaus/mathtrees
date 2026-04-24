@@ -55,3 +55,38 @@ static func set_multimesh_transforms_2d(multimesh: MultiMesh, transforms: Array[
 		#data[base + 7] = 0.0
 
 #	multimesh.buffer = data
+
+static func get_path_length(points: PackedVector2Array) -> float:
+	var total_length: float = 0.
+	if points.size() < 2:
+		return 0.
+	for i in range(points.size()-1):
+		var from := points[i]
+		var to := points[i + 1]
+		total_length += from.distance_to(to)
+	return total_length
+
+static func move_along_points(node: Node2D, points: PackedVector2Array, speed: float) -> Tween:
+	if points.size() < 2:
+		return
+
+	var tween := node.create_tween()
+	var segment_count := points.size() - 1
+
+	for i in range(segment_count):
+		var from := points[i]
+		var to := points[i + 1]
+		var length: float = from.distance_to(to)
+		var segment_time = length / speed
+		move_to_point(node, tween, from, to, segment_time)
+	return tween
+
+static func move_to_point(node: Node2D, tween: Tween, from: Vector2, to: Vector2, time: float) -> Tween:
+	tween.tween_method(
+			func(t: float) -> void:
+				node.position = from.lerp(to, t),
+			0.0,
+			1.0,
+			time
+		)
+	return tween

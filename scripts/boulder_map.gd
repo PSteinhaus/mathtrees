@@ -20,6 +20,21 @@ func global_to_coordinate(global: Vector2) -> Vector2i:
 func coordinate_to_global(coordinate: Vector2i) -> Vector2:
 	return Vector2(coordinate * CHUNK_SIZE)
 
+func close_boulders_global(c0: Vector2) -> Array[Boulder]:
+	var coords = global_to_coordinate(c0)
+	return close_boulders(coords)
+
+# warning: this is an approximation as it is based on a line from pos to the position of the boulders
+func closest_boulder_face_dist_sq_global(pos: Vector2) -> float:
+	var c_boulders = close_boulders_global(pos)
+	var smallest_dist_sq: float = INF
+	for b in c_boulders:
+		var allowed_p: Vector2 = closest_allowed_point(pos, b.position)
+		var dist: float = pos.distance_squared_to(allowed_p)
+		if dist < smallest_dist_sq:
+			smallest_dist_sq = dist
+	return smallest_dist_sq
+
 func close_boulders(c0: Vector2i) -> Array[Boulder]:
 	# go through the chunk and all 8 surrounding ones and collect all boulders
 	var c_boulders: Array[Boulder] = []
@@ -54,12 +69,14 @@ func rect_boulders(global_rect: Rect2) -> Array[Boulder]:
 
 ## comparison points must be in global space
 ## we assume that start is actually allowed
-func closest_allowed_point(start: Vector2, end: Vector2) -> Vector2:
+func closest_allowed_point(start: Vector2, end: Vector2, collide: bool = false) -> Vector2:
 	var closest_dist: float = start.distance_to(end)
 	var closest_point: Vector2 = end
 	# first get the chunk, so we know which 9 chunks to check
 	var c0 = global_to_coordinate(end)
 	var c_boulders = close_boulders(c0)
+	var closest_boulder = null
+	var collision_point: Vector2
 	
 	# go through all boulders and check for a collision
 	for b: Boulder in c_boulders:
@@ -78,7 +95,11 @@ func closest_allowed_point(start: Vector2, end: Vector2) -> Vector2:
 					const SAFETY_DIST: float = 10.0
 					closest_point = p - (diff_normalized * SAFETY_DIST)
 					closest_dist = dist
-		
+					# also: collide!
+					closest_boulder = b
+					collision_point = p
+	if collide && closest_boulder:
+		closest_boulder.react_to_collision(collision_point)
 	return closest_point
 
 ## pos in global coords
@@ -94,12 +115,16 @@ func generate_power_boulder_at(pos: Vector2, size: float = 1.5, variant: Powerup
 	b.init_powerup(variant)
 	update_boulder(b)
 
-func update_boulder(b: Boulder):
-	# first delete the area from the map by checking the reverse_map:
+func remove_boulder(b: Boulder, delete: bool = true):
 	if reverse_map.has(b):
 		for coords: Vector2i in reverse_map[b]:
 			map[coords].erase(b)
-			#var indices: Vector2i = map[coords][rt]	# start and end of 
+	if delete:
+		b.queue_free()
+
+func update_boulder(b: Boulder):
+	# first delete the boulder from the map by checking the reverse_map:
+	remove_boulder(b, false)
 	
 	# go through the points of the area and check to which chunks they belong
 	# then add the area to the chunks (and collect that chunk coordinates to later add all of them to the reverse map)

@@ -8,6 +8,7 @@ const GROW_DELAY := .00
 var grow_cooldown := 0.
 var root_point_map := RootPointMap.new()
 var boulder_map := BoulderMap.new()
+var power_nodes: Array[PowerupNode] = []
 @onready var current_tree: RT_Tree = $RT_Tree:
 	set(new_value):
 		# TODO: add a listener to the old tree merging points with other roots once the run and the optimization is through
@@ -86,11 +87,12 @@ func generate_boulders():
 				var size: float = randf_range(0.5, 3.)
 				boulder_map.generate_boulder_at(root_pos + Vector2(x, y), size)
 			# also place some energy boulders
-			if randi_range(0, 100) < 2:
+			if randi_range(0, 100) < 12:
 				var x: float = chunk_x * CHUNK_SIZE + randf() * CHUNK_SIZE
 				var y: float = chunk_y * CHUNK_SIZE + randf() * CHUNK_SIZE
 				var size: float = randf_range(0.8, 1.2)
-				boulder_map.generate_power_boulder_at(root_pos + Vector2(x, y), size, PowerupNode.PowerupVariant.SPEED)
+				var variant = PowerupNode.PowerupVariant.values().pick_random()
+				boulder_map.generate_power_boulder_at(root_pos + Vector2(x, y), size, variant)
 
 func _ready() -> void:
 	# register yourself as THE WORLD on the globalton
@@ -176,7 +178,7 @@ func update_visible_boulders():
 	var c_rect = camera_global_rect()
 	var boulder_rect = Rect2i(boulder_map.global_to_coordinate(c_rect.position), boulder_map.global_to_coordinate(c_rect.size))
 	if boulder_rect != cached_boulder_rect:
-		print("RECALC "+str(randi()))
+		#print("RECALC "+str(randi()))
 		var visible_boulders = boulder_map.rect_boulders(c_rect)
 		Boulder.set_visible_boulders(visible_boulders)
 		cached_boulder_rect = boulder_rect
@@ -197,7 +199,7 @@ func grow_towards_touch(delta: float) -> void:
 	grow_vec = grow_vec.limit_length(delta * GROW_PER_SECOND * CLOSE_FACTOR * energy_grow_factor())
 	# also: stop if you hit a boulder
 	var end_temp_global = current_tree.to_global(latest_point + grow_vec)
-	var farthest_allowed_global = boulder_map.closest_allowed_point(latest_root_point_global(), end_temp_global)
+	var farthest_allowed_global = boulder_map.closest_allowed_point(latest_root_point_global(), end_temp_global, true)
 	var farthest_allowed_local = current_tree.to_local(farthest_allowed_global)
 	var skip_cost: bool = false
 	if farthest_allowed_global != end_temp_global:
@@ -262,6 +264,80 @@ func _on_button_pressed() -> void:
 	current_tree.add_point(Vector2.ZERO)
 	camera.target = $RT_Tree.global_position
 
-
 func _on_button_opt_pressed() -> void:
 	opt_enabled = !opt_enabled
+
+func react_to_new_boulder_powerup_discovery(b: BoulderPowerup) -> void:
+	b.react_to_discovery()
+	# get the points of the currently growing root and then use a tween to move the boulder along
+	# these points back up to the tree where it is placed in a free spot and set to "discovered"
+	# so that it gets available for exercise interaction
+	var points: PackedVector2Array = current_tree.points_global()
+	points.reverse()
+	const SPEED: float = 130.
+	var tween = Helpers.move_along_points(b.powerup_node, points, SPEED)
+	# when the powerup_node reaches the root, find a free spot near the root with enough space around and move it there
+	var free_spot: Vector2 = find_free_spot_at_root()	# FIXME: this call (or something else?) sometimes causes weird bugs where multiple power_nodes are suddenly discovery-affected (moved along the path and for each one a new placed position is found...)
+	var r_pos: Vector2 = $RT_Tree.position
+	tween = Helpers.move_to_point(b.powerup_node, tween, r_pos, free_spot, r_pos.distance_to(free_spot) / SPEED)
+	tween.tween_callback(
+			func() -> void: b.powerup_node.state = PowerupNode.State.PLACED
+		)
+	b.powerup_node.placed_pos = free_spot
+
+var rad_offset: float = 0.		# to save where the last run of the algorithm left
+var angle_offset: float = 0.	# in order not to unnecessarily run the first steps again
+func find_free_spot_at_root() -> Vector2:
+	# set a radius close to the root (meaning small) and then cycle through angles until you find one
+	# that is free
+	const INITIAL_RADIUS: float = 150.
+	const ANGLE_BORDER: float = 0.3
+	const INITIAL_ANGLE: float = PI - ANGLE_BORDER
+	const MIN_ANGLE: float = ANGLE_BORDER
+	const ANGLE_STEP: float = - 0.2
+	const RADIUS_STEP: float = 64.
+	const CLOSE_THRESHOLD_SPOT: float = 160.
+	const MAX_RAD: float = 1500.
+	var free_spot: Vector2 = Vector2.ZERO
+	var angle: float = INITIAL_ANGLE + angle_offset
+	var rad: float = INITIAL_RADIUS + rad_offset
+	
+	var iterate: bool = false
+	while free_spot == Vector2.ZERO:
+		if iterate:
+			angle += ANGLE_STEP
+			if angle < MIN_ANGLE:
+				angle = INITIAL_ANGLE
+				rad += RADIUS_STEP
+				if rad > MAX_RAD:
+					# emergency fallback in case anyone should ever have so many powerups that no new positions can be found...
+					return $RT_Tree.position + Vector2(400. + randf_range(- 150., 150.), 30. + randf_range(- 150., 150.))
+			iterate = false
+		
+		var spot: Vector2 = $RT_Tree.position + Vector2(rad * cos(angle), rad * sin(angle))
+		# the spot is considered free if the distance to other power nodes (and boulders) is larger than a threshold
+		var closest_b_face_dist_squared = boulder_map.closest_boulder_face_dist_sq_global(spot)
+		if closest_b_face_dist_squared <= 2 ** 2.:
+			iterate = true
+		if iterate: continue
+		# if you passed the boulders check the power nodes next
+		for n: PowerupNode in power_nodes:
+			if n.state == PowerupNode.State.PLACED || n.state == PowerupNode.State.MOVING:
+				# only nodes with paced positions should be considered for collision
+				var dist_squared: float = spot.distance_squared_to(n.placed_pos)
+				if dist_squared <= CLOSE_THRESHOLD_SPOT ** 2.:
+					iterate = true
+					break
+		if iterate: continue
+		free_spot = spot
+	
+	rad_offset = rad - INITIAL_RADIUS
+	angle_offset = angle - INITIAL_ANGLE
+	return free_spot
+
+func add_power_up_node(node: PowerupNode) -> void:
+	add_child(node)
+	power_nodes.push_back(node)
+
+func engage_exercise_from_boulder_powerup(b: BoulderPowerup) -> void:
+	pass

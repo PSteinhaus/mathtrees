@@ -4,6 +4,7 @@ class_name Boulder
 static var multimesh_instances: Array[MultiMeshInstance2D]
 static var multimesh_instance_poly_points: Array[PackedVector2Array]
 var mm_index: int
+var transform_index: int
 ## these have to be here because these infos are only represented as a transform of an instance
 ## inside an mm when the boulder is actually visible, so we need to store them here as well to be
 ## able to restore them
@@ -14,12 +15,12 @@ var scale: Vector2
 const VARIANT_COUNT: int = 4
 
 # Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
+#func _ready() -> void:
+	#pass # Replace with function body.
+#
+## Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(_delta: float) -> void:
+	#pass
 
 func multimesh():
 	return multimesh_instances[mm_index].multimesh
@@ -37,6 +38,10 @@ func points() -> PackedVector2Array:
 	for i in poly_points.size():
 		result[i] = transform2D() * poly_points[i]
 	return result
+
+## p is the collision position in global coordinates
+func react_to_collision(p: Vector2):
+	pass
 
 static func mmi_index_range() -> Vector2i:
 	return Vector2i(0, VARIANT_COUNT - 1)
@@ -57,6 +62,11 @@ func set_props(pos: Vector2, rot: float, s: Vector2, mm_i: int):
 	self.scale = s
 	self.rotation = rot
 
+func move_visually(new_pos: Vector2) -> void:
+	position = new_pos
+	var mm = multimesh()
+	mm.set_instance_transform_2d(transform_index, transform2D())
+
 ## makes the given boulders actually visible, by updating the multimesh buffers
 static func set_visible_boulders(boulders: Array[Boulder]):
 	# create the transform for each boulder and collect them, sorted for each multimesh
@@ -69,12 +79,13 @@ static func set_visible_boulders(boulders: Array[Boulder]):
 		transforms_indices.push_back(0)
 	for b: Boulder in boulders:
 		transforms[b.mm_index][transforms_indices[b.mm_index]] = Transform2D(b.rotation, b.scale, 0., b.position)
+		b.transform_index = transforms_indices[b.mm_index]
 		transforms_indices[b.mm_index] += 1
 	for i in range(0, multimesh_instances.size()):
 		var mm_boulder_count = transforms_indices[i]
 		var mm: MultiMesh = multimesh_instances[i].multimesh
 		if mm.instance_count < mm_boulder_count:
-			print("resized "+str(i)+" to: "+str(mm_boulder_count))
+			#print("resized "+str(i)+" to: "+str(mm_boulder_count))
 			mm.instance_count = mm_boulder_count
 		# update visible instance count for each multimesh so that only those are drawn
 		mm.visible_instance_count = mm_boulder_count
@@ -91,19 +102,19 @@ static func init_boulders(parent: Node2D):
 			COLOR = vec4(0.0, 0.0, 0.2, 1.0); 
 		}
 	"""
-	var shader_powerup := Shader.new()
-	shader_powerup.code = """
+	var shader_power := Shader.new()
+	shader_power.code = """
 		shader_type canvas_item;
-		
+
 		void fragment() {
-			COLOR = vec4(0.1, 0.1, 0.3, 1.);
+			COLOR = vec4(0.1, 0.1, 0.3, 1.0); 
 		}
 	"""
 
 	var black_material := ShaderMaterial.new()
 	black_material.shader = shader
 	var power_material := ShaderMaterial.new()
-	power_material.shader = shader_powerup
+	power_material.shader = shader_power
 	
 	multimesh_instances = []
 	multimesh_instance_poly_points = []
@@ -115,7 +126,8 @@ static func init_boulders(parent: Node2D):
 
 static func generate_boulder_multimesh(mat: Material, parent: Node2D):
 	var multimesh_instance := MultiMeshInstance2D.new()
-	multimesh_instance.material = mat
+	if mat != null:
+		multimesh_instance.material = mat
 	var new_multimesh = MultiMesh.new()
 	new_multimesh.transform_format = MultiMesh.TRANSFORM_2D
 	var mesh_points = generate_poly_points()
