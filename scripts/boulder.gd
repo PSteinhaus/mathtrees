@@ -40,7 +40,7 @@ func points() -> PackedVector2Array:
 	return result
 
 ## p is the collision position in global coordinates
-func react_to_collision(p: Vector2):
+func react_to_collision(_p: Vector2):
 	pass
 
 static func mmi_index_range() -> Vector2i:
@@ -131,7 +131,7 @@ static func generate_boulder_multimesh(mat: Material, parent: Node2D):
 	var new_multimesh = MultiMesh.new()
 	new_multimesh.transform_format = MultiMesh.TRANSFORM_2D
 	var mesh_points = generate_poly_points()
-	var mesh = create_convex_polygon_mesh_2d(mesh_points)
+	var mesh = Helpers.create_convex_polygon_mesh_2d(mesh_points)
 	new_multimesh.mesh = mesh
 	multimesh_instance.multimesh = new_multimesh
 	multimesh_instances.push_back(multimesh_instance)
@@ -161,30 +161,3 @@ static func generate_poly_points(radius: float = 50.0) -> PackedVector2Array:
 		new_points.append(Vector2(x, y))
 	
 	return new_points
-
-static func create_convex_polygon_mesh_2d(poly_points: PackedVector2Array) -> ArrayMesh:
-	if poly_points.size() < 3:
-		return null
-
-	var arrays := []
-	arrays.resize(Mesh.ARRAY_MAX)
-
-	var verts := PackedVector3Array()
-	var indices := PackedInt32Array()
-
-	# Convert 2D points to 3D vertices on the XY plane.
-	for p in poly_points:
-		verts.append(Vector3(p.x, p.y, 0.0))
-
-	# Triangulate as a fan: (0, i, i+1)
-	for i in range(1, poly_points.size() - 1):
-		indices.append(0)
-		indices.append(i)
-		indices.append(i + 1)
-
-	arrays[Mesh.ARRAY_VERTEX] = verts
-	arrays[Mesh.ARRAY_INDEX] = indices
-
-	var mesh := ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	return mesh

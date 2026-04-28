@@ -90,3 +90,148 @@ static func move_to_point(node: Node2D, tween: Tween, from: Vector2, to: Vector2
 			time
 		)
 	return tween
+
+static func get_node_leaves(node: Node) -> Array[Node]:
+	var leaves: Array[Node] = []
+	
+	# If the node has no children, it is a leaf
+	if node.get_child_count() == 0:
+		leaves.push_back(node)
+	else:
+		# Otherwise, recursively search through all children
+		for child in node.get_children():
+			leaves.append_array(get_node_leaves(child))
+			
+	return leaves
+
+static func create_convex_polygon_mesh_2d(poly_points: PackedVector2Array) -> ArrayMesh:
+	if poly_points.size() < 3:
+		return null
+
+	var arrays := []
+	arrays.resize(Mesh.ARRAY_MAX)
+
+	var verts := PackedVector3Array()
+	var indices := PackedInt32Array()
+
+	# Convert 2D points to 3D vertices on the XY plane.
+	for p in poly_points:
+		verts.append(Vector3(p.x, p.y, 0.0))
+
+	# Triangulate as a fan: (0, i, i+1)
+	for i in range(1, poly_points.size() - 1):
+		indices.append(0)
+		indices.append(i)
+		indices.append(i + 1)
+
+	arrays[Mesh.ARRAY_VERTEX] = verts
+	arrays[Mesh.ARRAY_INDEX] = indices
+
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	return mesh
+
+static func create_line_mesh_2d(line_points: PackedVector2Array) -> ArrayMesh:
+	var mesh := ArrayMesh.new()
+
+	if line_points.size() < 2:
+		return mesh
+	
+	if line_points.size() % 2 != 0:
+		push_error("create_line_mesh_2d called with uneven point number!")
+
+	var arrays := []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = line_points
+
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_LINES, arrays)
+	return mesh
+
+static func create_line_mesh_from_lines(
+	lines: PackedVector2Array,
+	vertex_start_width: float = 10.0,
+	vertex_end_width: float = 6.0
+) -> Mesh:
+	if lines.size() < 2:
+		return null
+
+	var mesh = ArrayMesh.new()
+
+	var vertices : PackedVector2Array
+	var uvs : PackedVector2Array
+	var normals : PackedVector2Array
+	var colors : PackedColorArray
+
+	# Temp arrays for building
+	var verts = []
+	var uvs_lst = []
+	var normals_lst = []
+	var colors_lst = []
+
+	var total_segments: int = lines.size() / 2
+	for i in range(total_segments):
+		var j: int = i * 2
+		var p0 = lines[j]
+		var p1 = lines[j+1]
+
+		var segment_uv = float(i) / float(total_segments)
+		#var width0 = vertex_start_width
+		#var width1 = vertex_end_width
+		var width0 = lerp(vertex_start_width, vertex_end_width, segment_uv)
+		var width1 = lerp(vertex_start_width, vertex_end_width, (i + 1.0) / total_segments)
+
+		# Segment direction and normal
+		var dir = (p1 - p0).normalized()
+		var normal = Vector2(-dir.y, dir.x)
+
+		# Build quad: 4 vertices, CCW
+		var v0 = p0 + normal * width0
+		var v1 = p0 - normal * width0
+		var v2 = p1 + normal * width1
+		var v3 = p1 - normal * width1
+
+		# FIXME: the order of these vertices is probably somewhat wrong, as I
+		# 		 developed it through trial and error, but this will likely only
+		#		 come up once meshes created here will get textured
+		verts.append(v0)
+		verts.append(v1)
+		verts.append(v3)
+		verts.append(v3)
+		verts.append(v2)
+		verts.append(v0)
+
+		# UVs: 0…1 along the segment
+		uvs_lst.append(Vector2(1, 0))   # v0
+		uvs_lst.append(Vector2(0, 0))   # v1
+		uvs_lst.append(Vector2(0, 1))   # v3
+		uvs_lst.append(Vector2(0, 1))   # v3
+		uvs_lst.append(Vector2(1, 1))   # v2
+		uvs_lst.append(Vector2(1, 0))   # v0
+
+		# Normals (if needed by shader) (WARNGING: probably broken)
+		#normals_lst.append(normal)
+		#normals_lst.append(normal)
+		#normals_lst.append(normal)
+		#normals_lst.append(normal)
+
+		# Color: you can later pass via uniform; here just white
+		for _i in range(6):
+			colors_lst.append(Color(1, 1, 1))
+
+	# Convert to packed arrays
+	vertices = PackedVector2Array(verts)
+	uvs = PackedVector2Array(uvs_lst)
+	#normals = PackedVector2Array(normals_lst)
+	colors = PackedColorArray(colors_lst)
+
+	# Fill mesh array
+	var surface_array = []
+	surface_array.resize(Mesh.ARRAY_MAX)
+	surface_array[Mesh.ARRAY_VERTEX] = vertices
+	surface_array[Mesh.ARRAY_TEX_UV] = uvs
+	#surface_array[Mesh.ARRAY_NORMAL] = normals
+	surface_array[Mesh.ARRAY_COLOR] = colors
+
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, surface_array)
+
+	return mesh

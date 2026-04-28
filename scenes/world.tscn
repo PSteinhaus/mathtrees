@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://b28ox1t6t4rny" path="res://scripts/world.gd" id="1_nnsk1"]
 [ext_resource type="Script" uid="uid://bao8uj5b72l54" path="res://scripts/rt_tree.gd" id="2_rwgxs"]
 [ext_resource type="Script" uid="uid://dag5jq8aj6ti8" path="res://scripts/camera_2d.gd" id="3_4wyf3"]
+[ext_resource type="Script" uid="uid://bgyg384lruwgx" path="res://scripts/fractal_tree.gd" id="4_7r4gi"]
 [ext_resource type="Script" uid="uid://dsrsute6c1tkj" path="res://scripts/debug_label.gd" id="4_k0juu"]
 [ext_resource type="Texture2D" uid="uid://cqdkih6iesxvp" path="res://sprites/speed.png" id="5_4mrxx"]
 [ext_resource type="Texture2D" uid="uid://d12vfq2qy5fjj" path="res://sprites/energy.png" id="6_7r4gi"]
@@ -24,6 +25,7 @@ scale = Vector2(394235.28, 1169824.4)
 mesh = SubResource("QuadMesh_rwgxs")
 
 [node name="RT_Tree_Up" type="Node2D" parent="World" unique_id=465707927]
+visible = false
 position = Vector2(1080, 1788)
 script = ExtResource("2_rwgxs")
 sway_frequency = 0.2
@@ -37,6 +39,11 @@ metadata/_custom_type_script = "uid://bao8uj5b72l54"
 [node name="Camera2D" type="Camera2D" parent="World" unique_id=217393849]
 position = Vector2(540, 889)
 script = ExtResource("3_4wyf3")
+
+[node name="FractalTree" type="MultiMeshInstance2D" parent="World" unique_id=802717106]
+scale = Vector2(1.56, 1.56)
+script = ExtResource("4_7r4gi")
+metadata/_custom_type_script = "uid://bgyg384lruwgx"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2022131504]
 

@@ -94,9 +94,11 @@ func generate_boulders():
 				var variant = PowerupNode.PowerupVariant.values().pick_random()
 				boulder_map.generate_power_boulder_at(root_pos + Vector2(x, y), size, variant)
 
-func _ready() -> void:
+func _init() -> void:
 	# register yourself as THE WORLD on the globalton
 	Global.set_world(self)
+
+func _ready() -> void:
 	# initialize the boulders
 	Boulder.init_boulders(self)
 	
@@ -115,44 +117,60 @@ func _ready() -> void:
 	#boulder_map.generate_boulder_at(root_pos + Vector2(0., 500.))
 	
 	# create the tree that grows upwards
-	$RT_Tree_Up.position = root_pos
-	$RT_Tree_Up.add_point(Vector2(0., 0.))
-	$RT_Tree_Up.add_point(Vector2(0., -100.))
-	# add branches
-	var branch0 = RT_Tree.new()
-	var branch1 = RT_Tree.new()
-	$RT_Tree_Up.add_rt_child(branch0, 1)
-	$RT_Tree_Up.add_rt_child(branch1, 1)
-	branch0.add_point(Vector2(0., 0.))
-	branch0.add_point(Vector2(-40., -50.))
-	branch1.add_point(Vector2(0., 0.))
-	branch1.add_point(Vector2(50., -50.))
-	branch1.add_point(Vector2(80., -160.))
-	#var branch2 = RT_Tree.new()
-	#var branch3 = RT_Tree.new()
-	#branch1.add_rt_child(branch2, 1)
-	#branch1.add_rt_child(branch3, 1)
-	#branch2.add_point(Vector2(0., 0.), false)
-	#branch2.add_point(Vector2(30., -50.), false)
-	#branch3.add_point(Vector2(0., 0.), false)
-	#branch3.add_point(Vector2(-30., -50.), false)
-	var g_scale = Vector2(0.6, 0.6)
-	$RT_Tree_Up.grow_recursively(g_scale)
-	for c in $RT_Tree_Up.rt_children:
-		c.grow_recursively(g_scale)
-	for c in $RT_Tree_Up.rt_children:
-		for c0 in c.rt_children:
-			c0.grow_recursively(g_scale)
-	for c in $RT_Tree_Up.rt_children:
-		for c0 in c.rt_children:
-			for c1 in c0.rt_children:
-				c1.grow_recursively(g_scale)
-	for c in $RT_Tree_Up.rt_children:
-		for c0 in c.rt_children:
-			for c1 in c0.rt_children:
-				for c2 in c1.rt_children:
-					c2.grow_recursively(g_scale)
-	$RT_Tree_Up.scale *= 1.8
+	#$RT_Tree_Up.position = root_pos
+	#$RT_Tree_Up.add_point(Vector2(0., 0.))
+	#$RT_Tree_Up.add_point(Vector2(0., -100.))
+	## add branches
+	#var branch0 = RT_Tree.new()
+	#var branch1 = RT_Tree.new()
+	#$RT_Tree_Up.add_rt_child(branch0, 1)
+	#$RT_Tree_Up.add_rt_child(branch1, 1)
+	#branch0.add_point(Vector2(0., 0.))
+	#branch0.add_point(Vector2(-40., -50.))
+	#branch1.add_point(Vector2(0., 0.))
+	#branch1.add_point(Vector2(50., -50.))
+	#branch1.add_point(Vector2(80., -160.))
+	##var branch2 = RT_Tree.new()
+	##var branch3 = RT_Tree.new()
+	##branch1.add_rt_child(branch2, 1)
+	##branch1.add_rt_child(branch3, 1)
+	##branch2.add_point(Vector2(0., 0.), false)
+	##branch2.add_point(Vector2(30., -50.), false)
+	##branch3.add_point(Vector2(0., 0.), false)
+	##branch3.add_point(Vector2(-30., -50.), false)
+	#var g_scale = Vector2(0.6, 0.6)
+	#$RT_Tree_Up.grow_recursively(g_scale)
+	#for c in $RT_Tree_Up.rt_children:
+		#c.grow_recursively(g_scale)
+	#for c in $RT_Tree_Up.rt_children:
+		#for c0 in c.rt_children:
+			#c0.grow_recursively(g_scale)
+	#for c in $RT_Tree_Up.rt_children:
+		#for c0 in c.rt_children:
+			#for c1 in c0.rt_children:
+				#c1.grow_recursively(g_scale)
+	#for c in $RT_Tree_Up.rt_children:
+		#for c0 in c.rt_children:
+			#for c1 in c0.rt_children:
+				#for c2 in c1.rt_children:
+					#c2.grow_recursively(g_scale)
+	#$RT_Tree_Up.scale *= 1.8
+	
+	var k = FractalTree.FracKernel.new()
+	k.add_point(Vector2(-40., -50.))
+	var k_branch0 = k.start_child_arm_from(0, Vector2(50., -50.))
+	k_branch0.add_point(Vector2(80., -160.))
+	$FractalTree.kernel = k
+	$FractalTree.position = root_pos
+	$FractalTree.grow()
+	$FractalTree.grow()
+	$FractalTree.grow()
+	$FractalTree.grow()
+	$FractalTree.grow()
+	$FractalTree.grow()
+	$FractalTree.grow()
+	$FractalTree.grow()
+	$FractalTree.grow()
 	
 	_update_touch_local(camera.get_screen_center_position())
 
