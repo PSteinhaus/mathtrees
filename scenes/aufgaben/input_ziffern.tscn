@@ -1,0 +1,120 @@
+[gd_scene load_steps=4 format=3 uid="uid://dsulmb7ql4v57"]
+
+[ext_resource type="Script" uid="uid://b5cp6medjmuk3" path="res://scripts/aufgaben/input_ziffern.gd" id="1_xjr3v"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b61r6"]
+bg_color = Color(0.4, 0.044, 0.138933, 1)
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b61r6"]
+load_path = "res://.godot/imported/Button_delete.png-5dd3e68b3796fd03d00a687550a16f9a.ctex"
+
+[node name="InputZiffern" type="VBoxContainer"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -147.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("1_xjr3v")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Button1" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 56
+text = "1"
+
+[node name="Button2" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 56
+text = "2"
+
+[node name="Button3" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 56
+text = "3"
+
+[node name="Button4" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 56
+text = "4"
+
+[node name="Button5" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 56
+text = "5"
+
+[node name="ButtonDelete" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/icon_max_width = 59
+theme_override_font_sizes/font_size = 56
+theme_override_styles/normal = SubResource("StyleBoxFlat_b61r6")
+icon = SubResource("CompressedTexture2D_b61r6")
+icon_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Button6" type="Button" parent="VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 56
+text = "6"
+
+[node name="Button7" type="Button" parent="VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 56
+text = "7"
+
+[node name="Button8" type="Button" parent="VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 56
+text = "8"
+
+[node name="Button9" type="Button" parent="VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 56
+text = "9"
+
+[node name="Button0" type="Button" parent="VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 56
+text = "0"

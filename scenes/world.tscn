@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://d12vfq2qy5fjj" path="res://sprites/energy.png" id="6_7r4gi"]
 [ext_resource type="Texture2D" uid="uid://6jxj28hfujty" path="res://sprites/drill.png" id="7_w7kh3"]
 [ext_resource type="Texture2D" uid="uid://ba1o1xj41gw50" path="res://sprites/circle.png" id="8_e3hyu"]
+[ext_resource type="PackedScene" uid="uid://i6gbqw570ug1" path="res://scenes/aufgaben/ex_zr_20.tscn" id="10_w7kh3"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_rwgxs"]
 center_offset = Vector3(0, 0.5, 0)
@@ -46,6 +47,9 @@ script = ExtResource("4_7r4gi")
 metadata/_custom_type_script = "uid://bgyg384lruwgx"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2022131504]
+
+[node name="ExZR20" parent="CanvasLayer" unique_id=294089475 instance=ExtResource("10_w7kh3")]
+unique_name_in_owner = true
 
 [node name="DebugLabel" type="Label" parent="CanvasLayer" unique_id=1038649796]
 unique_name_in_owner = true
@@ -90,5 +94,7 @@ texture = ExtResource("7_w7kh3")
 position = Vector2(647, 799)
 texture = ExtResource("8_e3hyu")
 
+[connection signal="answer_checked" from="CanvasLayer/ExZR20" to="World" method="_on_ex_zr_20_answer_checked"]
+[connection signal="level_changed" from="CanvasLayer/ExZR20" to="World" method="_on_ex_zr_20_level_changed"]
 [connection signal="pressed" from="CanvasLayer/Button_opt" to="World" method="_on_button_opt_pressed"]
 [connection signal="pressed" from="CanvasLayer/Button_new" to="World" method="_on_button_pressed"]

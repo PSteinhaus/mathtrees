@@ -158,19 +158,27 @@ func _ready() -> void:
 	
 	var k = FractalTree.FracKernel.new()
 	k.add_point(Vector2(-40., -50.))
+	k.add_point(Vector2(-70., -110.))
 	var k_branch0 = k.start_child_arm_from(0, Vector2(50., -50.))
-	k_branch0.add_point(Vector2(80., -160.))
+	k_branch0.add_point(Vector2(80., -120.))
 	$FractalTree.kernel = k
 	$FractalTree.position = root_pos
-	$FractalTree.grow()
-	$FractalTree.grow()
-	$FractalTree.grow()
-	$FractalTree.grow()
-	$FractalTree.grow()
-	$FractalTree.grow()
-	$FractalTree.grow()
-	$FractalTree.grow()
-	$FractalTree.grow()
+	#var tween = create_tween()
+	#tween.tween_callback($FractalTree.grow)
+	#tween.tween_interval(1.25)
+	#tween.tween_callback($FractalTree.grow)
+	#tween.tween_interval(1.25)
+	#tween.tween_callback($FractalTree.grow)
+	#tween.tween_interval(1.25)
+	#tween.tween_callback($FractalTree.grow)
+	#tween.tween_interval(1.25)
+	#tween.tween_callback($FractalTree.grow)
+	#tween.tween_interval(1.25)
+	#tween.tween_callback($FractalTree.grow)
+	#tween.tween_interval(1.25)
+	#tween.tween_callback($FractalTree.grow)
+	#tween.tween_interval(1.25)
+	#tween.tween_callback($FractalTree.grow)
 	
 	_update_touch_local(camera.get_screen_center_position())
 
@@ -359,3 +367,13 @@ func add_power_up_node(node: PowerupNode) -> void:
 
 func engage_exercise_from_boulder_powerup(b: BoulderPowerup) -> void:
 	pass
+
+
+func _on_ex_zr_20_answer_checked(correct: bool) -> void:
+	# get a new challenge
+	if correct:
+		%ExZR20.new_challenge()
+
+
+func _on_ex_zr_20_level_changed(old_level: int, new_level: int) -> void:
+	$FractalTree.grow()

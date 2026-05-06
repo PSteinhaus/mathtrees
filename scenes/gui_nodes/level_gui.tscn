@@ -1,0 +1,288 @@
+[gd_scene format=3 uid="uid://cvw8oi7damq6q"]
+
+[ext_resource type="Script" uid="uid://bbbkjsuabqvym" path="res://scripts/level_gui.gd" id="1_6ijan"]
+[ext_resource type="Theme" uid="uid://150h0256rkgn" path="res://themes/taskFont.tres" id="1_qxuxa"]
+[ext_resource type="Script" uid="uid://t5wyt375lwys" path="res://scripts/bg_progress_bar.gd" id="2_wxlfs"]
+[ext_resource type="StyleBox" uid="uid://du0bu3tlrhrx4" path="res://themes/style_box_flat_main.tres" id="3_hv2nc"]
+[ext_resource type="StyleBox" uid="uid://6klssnayvr8v" path="res://themes/style_box_flat_checkmark.tres" id="3_ry7pk"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0cci1"]
+bg_color = Color(0.31802, 0.31802, 0.31802, 1)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hv2nc"]
+bg_color = Color(0, 0.572549, 0.164706, 1)
+border_width_left = 8
+border_width_top = 10
+border_width_right = 10
+border_color = Color(0.517647, 0.764706, 0.466667, 1)
+corner_radius_top_left = 28
+corner_radius_top_right = 40
+corner_detail = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ry7pk"]
+bg_color = Color(0.315, 0.42, 0.34475, 0.678431)
+border_width_left = 8
+border_width_top = 10
+border_width_right = 10
+border_color = Color(0.513417, 0.61, 0.4941, 0.823529)
+corner_radius_top_left = 28
+corner_radius_top_right = 40
+corner_detail = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hv2nc"]
+
+[sub_resource type="Animation" id="Animation_wxlfs"]
+length = 0.001
+capture_included = true
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SubmitButton:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 2,
+"values": [Vector2(0, 950)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SubmitButton:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("SubmitButton:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_ry7pk"]
+resource_name = "hide_submit_button"
+length = 1.4
+capture_included = true
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SubmitButton:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.36667),
+"transitions": PackedFloat32Array(0.196146, 1),
+"update": 2,
+"values": [Vector2(0, 814), Vector2(0, 950)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SubmitButton:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(1.36667),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("SubmitButton:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_hv2nc"]
+resource_name = "show_submit_button"
+length = 1.5
+capture_included = true
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SubmitButton:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.5),
+"transitions": PackedFloat32Array(0.225313, 1),
+"update": 2,
+"values": [Vector2(0, 950), Vector2(0, 814)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SubmitButton:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("SubmitButton:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ry7pk"]
+_data = {
+&"RESET": SubResource("Animation_wxlfs"),
+&"hide_submit_button": SubResource("Animation_ry7pk"),
+&"show_submit_button": SubResource("Animation_hv2nc")
+}
+
+[node name="LevelGUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6ijan")
+
+[node name="BGProgressBar" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_styles/fill = SubResource("StyleBoxFlat_0cci1")
+show_percentage = false
+script = ExtResource("2_wxlfs")
+
+[node name="SubmitButton" type="Button" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 80)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -330.0
+offset_right = 150.0
+offset_bottom = -208.33289
+grow_vertical = 0
+theme_override_font_sizes/font_size = 80
+theme_override_styles/normal = ExtResource("3_ry7pk")
+theme_override_styles/normal_mirrored = ExtResource("3_ry7pk")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hv2nc")
+theme_override_styles/hover = ExtResource("3_ry7pk")
+theme_override_styles/hover_mirrored = ExtResource("3_ry7pk")
+theme_override_styles/hover_pressed = ExtResource("3_ry7pk")
+theme_override_styles/hover_pressed_mirrored = ExtResource("3_ry7pk")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_ry7pk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_hv2nc")
+disabled = true
+text = "✔"
+
+[node name="TaskVBoxContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 350)
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -300.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="TotalPanelContainer" type="PanelContainer" parent="TaskVBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("1_qxuxa")
+theme_override_styles/panel = ExtResource("3_hv2nc")
+
+[node name="Label" type="Label" parent="TaskVBoxContainer/TotalPanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "20"
+
+[node name="SpinBox" type="SpinBox" parent="TaskVBoxContainer/TotalPanelContainer"]
+layout_mode = 2
+theme = ExtResource("1_qxuxa")
+theme_override_constants/buttons_width = 75
+alignment = 1
+
+[node name="PartsHBoxContainer" type="HBoxContainer" parent="TaskVBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PartPanel1" type="PanelContainer" parent="TaskVBoxContainer/PartsHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = ExtResource("3_hv2nc")
+
+[node name="SpinBox" type="SpinBox" parent="TaskVBoxContainer/PartsHBoxContainer/PartPanel1"]
+layout_mode = 2
+theme = ExtResource("1_qxuxa")
+theme_override_constants/buttons_width = 75
+alignment = 1
+
+[node name="Label" type="Label" parent="TaskVBoxContainer/PartsHBoxContainer/PartPanel1"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("1_qxuxa")
+text = "20"
+
+[node name="PartPanel2" type="PanelContainer" parent="TaskVBoxContainer/PartsHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("1_qxuxa")
+theme_override_styles/panel = ExtResource("3_hv2nc")
+
+[node name="SpinBox" type="SpinBox" parent="TaskVBoxContainer/PartsHBoxContainer/PartPanel2"]
+layout_mode = 2
+theme = ExtResource("1_qxuxa")
+theme_override_constants/buttons_width = 75
+alignment = 1
+
+[node name="Label" type="Label" parent="TaskVBoxContainer/PartsHBoxContainer/PartPanel2"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("1_qxuxa")
+text = "20"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_ry7pk")
+}
+
+[connection signal="pressed" from="SubmitButton" to="." method="_on_submit_button_pressed"]
+[connection signal="gui_input" from="TaskVBoxContainer/TotalPanelContainer/SpinBox" to="." method="_on_spin_box_gui_input"]
+[connection signal="gui_input" from="TaskVBoxContainer/PartsHBoxContainer/PartPanel1/SpinBox" to="." method="_on_spin_box_gui_input"]
+[connection signal="gui_input" from="TaskVBoxContainer/PartsHBoxContainer/PartPanel2/SpinBox" to="." method="_on_spin_box_gui_input"]

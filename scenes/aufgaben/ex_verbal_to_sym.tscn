@@ -1,0 +1,168 @@
+[gd_scene load_steps=11 format=3 uid="uid://blrbeu0iouvd3"]
+
+[ext_resource type="Script" uid="uid://pjqmr5o14kv7" path="res://scripts/aufgaben/ex_verbal_to_sym.gd" id="1_w1mgr"]
+[ext_resource type="Texture2D" uid="uid://ditw1c4n8u6hp" path="res://resources/Proto/Training_BG_v2.png" id="2_b03ko"]
+[ext_resource type="Texture2D" uid="uid://x77gerhiiwou" path="res://resources/Proto/Wandel_BG.png" id="3_b03ko"]
+[ext_resource type="Script" uid="uid://t5wyt375lwys" path="res://scripts/bg_progress_bar.gd" id="3_l3h6g"]
+[ext_resource type="PackedScene" uid="uid://bfbepcroguw3b" path="res://scenes/aufgaben/submit_button.tscn" id="4_wrlgc"]
+[ext_resource type="PackedScene" uid="uid://dsulmb7ql4v57" path="res://scenes/aufgaben/input_ziffern.tscn" id="5_jljxw"]
+[ext_resource type="Theme" uid="uid://150h0256rkgn" path="res://themes/taskFont.tres" id="6_2fwj7"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ewtj6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n8wwr"]
+bg_color = Color(0.3098733, 0.6366884, 0.64901274, 1)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2gsra"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.23921569, 0.23921569, 0.23921569, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[node name="ExVerbalToSym" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_w1mgr")
+
+[node name="TrainingBg2" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(359.66754, 423.34216)
+scale = Vector2(-0.33806312, 0.37477344)
+texture = ExtResource("2_b03ko")
+
+[node name="ChangeBg2" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(359.36993, 635.17694)
+scale = Vector2(-0.6674203, 0.6739621)
+texture = ExtResource("3_b03ko")
+
+[node name="BGProgressBar" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -524.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_styles/background = SubResource("StyleBoxEmpty_ewtj6")
+theme_override_styles/fill = SubResource("StyleBoxFlat_n8wwr")
+fill_mode = 3
+show_percentage = false
+script = ExtResource("3_l3h6g")
+
+[node name="TrainingBg" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(361.00003, 399)
+scale = Vector2(0.30342278, 0.31277615)
+texture = ExtResource("2_b03ko")
+
+[node name="ChangeBg" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(361.00003, 514.49994)
+scale = Vector2(0.6074074, 0.58906245)
+texture = ExtResource("3_b03ko")
+
+[node name="SubmitButton" parent="." instance=ExtResource("4_wrlgc")]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.59400004
+anchor_bottom = 0.59400004
+offset_left = 0.0
+offset_top = -0.32006836
+offset_right = 132.8711
+offset_bottom = 104.67993
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -170.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="InputZiffern" parent="VBoxContainer" instance=ExtResource("5_jljxw")]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("6_2fwj7")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Panel3" type="Panel" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_2gsra")
+
+[node name="LabelAnswer" type="Label" parent="VBoxContainer/HBoxContainer/Panel3"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -26.0
+offset_top = -62.8125
+offset_right = 26.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 82
+text = "56"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelVerbal" type="Panel" parent="VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+
+[node name="LabelVerbal" type="Label" parent="VBoxContainer/PanelVerbal"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -343.0
+offset_top = -62.8125
+offset_right = 342.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 38
+text = "sieben mal acht"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 1
+
+[connection signal="ready_to_check" from="." to="." method="_on_ready_to_check"]
+[connection signal="pressed" from="SubmitButton" to="." method="_on_submit_button_pressed"]
+[connection signal="delete_pressed" from="VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_delete_pressed"]
+[connection signal="number_pressed" from="VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_number_pressed"]

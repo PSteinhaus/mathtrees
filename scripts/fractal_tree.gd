@@ -110,7 +110,7 @@ var kernel: FracKernel:
 var ghost_tree: Node2D
 
 ## grow the fractal tree by one iteration, based on the kernel
-func grow() -> void:
+func grow(use_scale_tween: bool = true) -> void:
 	if kernel == null or ghost_tree == null:
 		return
 
@@ -125,7 +125,11 @@ func grow() -> void:
 			var leaf_rot = kernel_rots[i]
 			leaf_node.position = leaf_pos
 			const CHILD_SCALE: float = 0.7
-			leaf_node.scale = Vector2(CHILD_SCALE, CHILD_SCALE)
+			if use_scale_tween:
+				leaf_node.scale = Vector2.ZERO
+				create_tween().tween_property(leaf_node, "scale", Vector2(CHILD_SCALE, CHILD_SCALE), 3.0)
+			else:
+				leaf_node.scale = Vector2(CHILD_SCALE, CHILD_SCALE)
 			leaf_node.rotation = leaf_rot
 			leaf_node.original_rot = leaf_rot	# for swaying in the wind, see SwayNode2D
 			leaf_node.phase_shift =  leaf_rot * 2.	# for swaying in the wind, see SwayNode2D; also: randf() * TAU makes the tree appear sick ;)
@@ -144,7 +148,7 @@ func get_global_transforms() -> Array[Transform2D]:
 		result.append(node.global_transform)	# if we wanted to optimize this further we would not calc the global_transforms here on the CPU
 												# and leave it to the GPU, by using a custom shader using the tree structure to multiply transforms (but this is probably overengineering...)
 
-		for c in node.get_children():
+		for c: Node2D in node.get_children():
 			stack.append(c)
 
 	return result

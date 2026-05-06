@@ -1,0 +1,428 @@
+[gd_scene load_steps=10 format=3 uid="uid://tqkfkqmlymc8"]
+
+[ext_resource type="Script" uid="uid://g464oyj44eft" path="res://scripts/aufgaben/ex_over_ten.gd" id="1_7lt0c"]
+[ext_resource type="Texture2D" uid="uid://ditw1c4n8u6hp" path="res://resources/Proto/Training_BG_v2.png" id="2_ulr3e"]
+[ext_resource type="Script" uid="uid://t5wyt375lwys" path="res://scripts/bg_progress_bar.gd" id="3_pdx7f"]
+[ext_resource type="PackedScene" uid="uid://bfbepcroguw3b" path="res://scenes/aufgaben/submit_button.tscn" id="4_3uoav"]
+[ext_resource type="PackedScene" uid="uid://dsulmb7ql4v57" path="res://scenes/aufgaben/input_ziffern.tscn" id="5_0iu4p"]
+[ext_resource type="Theme" uid="uid://150h0256rkgn" path="res://themes/taskFont.tres" id="6_bmi6g"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ewtj6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n8wwr"]
+bg_color = Color(0.7, 0.6085333, 0.357, 1)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2gsra"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.23921569, 0.23921569, 0.23921569, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[node name="ExOverTen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_7lt0c")
+
+[node name="TrainingBg2" type="Sprite2D" parent="."]
+position = Vector2(359.66754, 423.34216)
+scale = Vector2(-0.33806312, 0.37477344)
+texture = ExtResource("2_ulr3e")
+
+[node name="BGProgressBar" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -461.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_styles/background = SubResource("StyleBoxEmpty_ewtj6")
+theme_override_styles/fill = SubResource("StyleBoxFlat_n8wwr")
+fill_mode = 3
+show_percentage = false
+script = ExtResource("3_pdx7f")
+
+[node name="TrainingBg" type="Sprite2D" parent="."]
+position = Vector2(361.00003, 399)
+scale = Vector2(0.30342278, 0.31277615)
+texture = ExtResource("2_ulr3e")
+
+[node name="SubmitButton" parent="." instance=ExtResource("4_3uoav")]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.59400004
+anchor_bottom = 0.59400004
+offset_left = 0.0
+offset_top = -0.32006836
+offset_right = 132.8711
+offset_bottom = 104.67993
+
+[node name="VBoxContainerJaNein" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -360.0
+offset_top = -458.0
+offset_right = 360.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainerJaNein"]
+layout_mode = 2
+
+[node name="ButtonYes" type="Button" parent="VBoxContainerJaNein/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 71.55)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 71
+text = "Ja"
+
+[node name="ButtonNo" type="Button" parent="VBoxContainerJaNein/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 71
+text = "Nein"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainerJaNein"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="VBoxContainerJaNein/HBoxContainer"]
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.86
+
+[node name="LabelChallengeJaNein" type="Label" parent="VBoxContainerJaNein/HBoxContainer/Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -26.0
+offset_top = -62.8125
+offset_right = 26.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 82
+text = "7 · 8"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelVerbal" type="Panel" parent="VBoxContainerJaNein"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+
+[node name="LabelVerbal" type="Label" parent="VBoxContainerJaNein/PanelVerbal"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -26.0
+offset_top = -62.8125
+offset_right = 26.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 65
+text = "Übergang?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainerUeber" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -170.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="InputZiffern" parent="VBoxContainerUeber" instance=ExtResource("5_0iu4p")]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("6_bmi6g")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainerUeber"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="VBoxContainerUeber/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.86
+
+[node name="LabelChallengeUeber" type="Label" parent="VBoxContainerUeber/HBoxContainer/Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -26.0
+offset_top = -62.8125
+offset_right = 26.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 82
+text = "7 · 8"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainerUeber"]
+layout_mode = 2
+
+[node name="PanelVerbal" type="Panel" parent="VBoxContainerUeber/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.75
+
+[node name="LabelVerbal" type="Label" parent="VBoxContainerUeber/HBoxContainer2/PanelVerbal"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -26.0
+offset_top = -62.8125
+offset_right = 26.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 65
+text = "über die"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel3" type="Panel" parent="VBoxContainerUeber/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_2gsra")
+
+[node name="LabelAnswer" type="Label" parent="VBoxContainerUeber/HBoxContainer2/Panel3"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = -62.8125
+offset_right = 47.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 82
+text = "56"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainerLoesung" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -170.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="InputZiffernLoesung" parent="VBoxContainerLoesung" instance=ExtResource("5_0iu4p")]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("6_bmi6g")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainerLoesung"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="VBoxContainerLoesung/HBoxContainer"]
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.86
+
+[node name="LabelChallengeLoesung" type="Label" parent="VBoxContainerLoesung/HBoxContainer/Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -26.0
+offset_top = -62.8125
+offset_right = 26.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 82
+text = "7 · 8"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelEqual" type="Panel" parent="VBoxContainerLoesung/HBoxContainer"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.75
+
+[node name="LabelEqual" type="Label" parent="VBoxContainerLoesung/HBoxContainer/PanelEqual"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -26.0
+offset_top = -62.8125
+offset_right = 26.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 105
+text = "="
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel3" type="Panel" parent="VBoxContainerLoesung/HBoxContainer"]
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_2gsra")
+
+[node name="LabelAnswerLoesung" type="Label" parent="VBoxContainerLoesung/HBoxContainer/Panel3"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = -62.8125
+offset_right = 47.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 82
+text = "56"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainerLoesung"]
+layout_mode = 2
+
+[node name="PanelSpacer1" type="Panel" parent="VBoxContainerLoesung/HBoxContainer2"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.59
+
+[node name="Panel4" type="Panel" parent="VBoxContainerLoesung/HBoxContainer2"]
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_2gsra")
+
+[node name="LabelToUebergang" type="Label" parent="VBoxContainerLoesung/HBoxContainer2/Panel4"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = -62.8125
+offset_right = 47.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 74
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel3" type="Panel" parent="VBoxContainerLoesung/HBoxContainer2"]
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_2gsra")
+
+[node name="LabelFromUebergang" type="Label" parent="VBoxContainerLoesung/HBoxContainer2/Panel3"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = -62.8125
+offset_right = 47.0
+offset_bottom = 62.8125
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 74
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelSpacer2" type="Panel" parent="VBoxContainerLoesung/HBoxContainer2"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.61
+
+[connection signal="ready_to_check" from="." to="." method="_on_ready_to_check"]
+[connection signal="pressed" from="SubmitButton" to="." method="_on_submit_button_pressed"]
+[connection signal="pressed" from="VBoxContainerJaNein/HBoxContainer2/ButtonYes" to="." method="_on_button_yes_pressed"]
+[connection signal="pressed" from="VBoxContainerJaNein/HBoxContainer2/ButtonNo" to="." method="_on_button_no_pressed"]
+[connection signal="delete_pressed" from="VBoxContainerUeber/InputZiffern" to="." method="_on_input_ziffern_delete_pressed"]
+[connection signal="number_pressed" from="VBoxContainerUeber/InputZiffern" to="." method="_on_input_ziffern_number_pressed"]
+[connection signal="delete_pressed" from="VBoxContainerLoesung/InputZiffernLoesung" to="." method="_on_input_ziffern_delete_pressed"]
+[connection signal="number_pressed" from="VBoxContainerLoesung/InputZiffernLoesung" to="." method="_on_input_ziffern_number_pressed"]
