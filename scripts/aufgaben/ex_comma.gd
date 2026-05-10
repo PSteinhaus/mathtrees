@@ -53,6 +53,7 @@ func check_answer_internal() -> bool:
 
 func get_ziffer_at(num: int, pos: int) -> int:
 	var teiler = 10 ** pos
+	@warning_ignore("integer_division")
 	return (num / teiler) % 10
 
 func new_challenge():
@@ -100,7 +101,8 @@ func new_challenge():
 			
 			%LabelAnswerFaktor.text = " " + einheit_klein
 			%LabelUnit.text = "1 " + einheit
-
+			
+			@warning_ignore("integer_division")
 			solution = faktor / int(%LabelFaktor.text)
 		Phase.LOESUNG:
 			%VBoxContainerStelle.visible = false
@@ -110,6 +112,7 @@ func new_challenge():
 			%LabelAnswerLoesung.text = " " + einheit_klein
 			%LabelChallengeLoesung.text = %LabelChallengeStelle.text
 			%LabelVerbalLoesung.text = "Du hast " + str(ziffer) + " davon, also..."
+			@warning_ignore("integer_division")
 			solution = ziffer * (faktor / int(%LabelFaktor.text))
 
 func active_loesung_label() -> Label:

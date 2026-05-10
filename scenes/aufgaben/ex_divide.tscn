@@ -1,11 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://d0i1kooobua8p"]
+[gd_scene format=3 uid="uid://d0i1kooobua8p"]
 
 [ext_resource type="Script" uid="uid://shtmu0d8e7go" path="res://scripts/aufgaben/ex_divide.gd" id="1_bfg52"]
-[ext_resource type="Texture2D" uid="uid://ditw1c4n8u6hp" path="res://resources/Proto/Training_BG_v2.png" id="2_2twwi"]
-[ext_resource type="Script" uid="uid://t5wyt375lwys" path="res://scripts/bg_progress_bar.gd" id="3_ieqtj"]
+[ext_resource type="Script" uid="uid://cgl4lrvsh1g1w" path="res://scripts/bg_progress_bar.gd" id="3_ieqtj"]
 [ext_resource type="PackedScene" uid="uid://bfbepcroguw3b" path="res://scenes/aufgaben/submit_button.tscn" id="4_5sc3o"]
 [ext_resource type="PackedScene" uid="uid://dsulmb7ql4v57" path="res://scenes/aufgaben/input_ziffern.tscn" id="5_ibcl3"]
-[ext_resource type="Theme" uid="uid://150h0256rkgn" path="res://themes/taskFont.tres" id="6_dwpsn"]
+[ext_resource type="Theme" uid="uid://b08hlr254klv1" path="res://themes/taskFont.tres" id="6_dwpsn"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ewtj6"]
 
@@ -30,7 +29,7 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
 
-[node name="ExDivide" type="Control"]
+[node name="ExDivide" type="Control" unique_id=2043070527]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -41,12 +40,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_bfg52")
 
-[node name="TrainingBg2" type="Sprite2D" parent="."]
-position = Vector2(359.66754, 423.34216)
-scale = Vector2(-0.33806312, 0.37477344)
-texture = ExtResource("2_2twwi")
-
-[node name="BGProgressBar" type="ProgressBar" parent="."]
+[node name="BGProgressBar" type="ProgressBar" parent="." unique_id=797011386]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -63,12 +57,7 @@ fill_mode = 3
 show_percentage = false
 script = ExtResource("3_ieqtj")
 
-[node name="TrainingBg" type="Sprite2D" parent="."]
-position = Vector2(361.00003, 399)
-scale = Vector2(0.30342278, 0.31277615)
-texture = ExtResource("2_2twwi")
-
-[node name="SubmitButton" parent="." instance=ExtResource("4_5sc3o")]
+[node name="SubmitButton" parent="." unique_id=67304732 instance=ExtResource("4_5sc3o")]
 visible = false
 layout_mode = 1
 anchors_preset = -1
@@ -79,7 +68,7 @@ offset_top = -0.32006836
 offset_right = 132.8711
 offset_bottom = 104.67993
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=737591686]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -89,22 +78,22 @@ offset_top = -170.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="InputZiffern" parent="VBoxContainer" instance=ExtResource("5_ibcl3")]
+[node name="InputZiffern" parent="VBoxContainer" unique_id=307128987 instance=ExtResource("5_ibcl3")]
 unique_name_in_owner = true
 layout_mode = 2
 theme = ExtResource("6_dwpsn")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1278278634]
 layout_mode = 2
 
-[node name="Panel" type="Panel" parent="VBoxContainer/HBoxContainer"]
+[node name="Panel" type="Panel" parent="VBoxContainer/HBoxContainer" unique_id=1798608859]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.86
 
-[node name="LabelChallenge" type="Label" parent="VBoxContainer/HBoxContainer/Panel"]
+[node name="LabelChallenge" type="Label" parent="VBoxContainer/HBoxContainer/Panel" unique_id=1968618531]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -123,14 +112,14 @@ text = "7 · 8"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel2" type="Panel" parent="VBoxContainer/HBoxContainer"]
+[node name="Panel2" type="Panel" parent="VBoxContainer/HBoxContainer" unique_id=1736774656]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.65
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/Panel2"]
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/Panel2" unique_id=1844879173]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -148,14 +137,14 @@ text = "="
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel3" type="Panel" parent="VBoxContainer/HBoxContainer"]
+[node name="Panel3" type="Panel" parent="VBoxContainer/HBoxContainer" unique_id=1520915572]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_2gsra")
 
-[node name="LabelAnswer" type="Label" parent="VBoxContainer/HBoxContainer/Panel3"]
+[node name="LabelAnswer" type="Label" parent="VBoxContainer/HBoxContainer/Panel3" unique_id=1450582842]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -174,12 +163,12 @@ text = "56"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PanelVerbal" type="Panel" parent="VBoxContainer"]
+[node name="PanelVerbal" type="Panel" parent="VBoxContainer" unique_id=1263615387]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 
-[node name="LabelVerbal" type="Label" parent="VBoxContainer/PanelVerbal"]
+[node name="LabelVerbal" type="Label" parent="VBoxContainer/PanelVerbal" unique_id=354997418]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8

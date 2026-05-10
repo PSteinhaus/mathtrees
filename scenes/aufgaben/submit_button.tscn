@@ -1,17 +1,21 @@
-[gd_scene load_steps=4 format=3 uid="uid://bfbepcroguw3b"]
+[gd_scene format=3 uid="uid://bfbepcroguw3b"]
 
-[ext_resource type="StyleBox" uid="uid://6klssnayvr8v" path="res://themes/style_box_flat_checkmark.tres" id="1_yavrx"]
-[ext_resource type="Texture2D" uid="uid://dkyhwshpvlysj" path="res://resources/Proto/Button_checkmark.png" id="2_s5g4q"]
+[ext_resource type="Texture2D" uid="uid://c6guye00odwbc" path="res://sprites/Button_checkmark.png" id="1_yavrx"]
 [ext_resource type="Script" uid="uid://doqhxx0cchl5o" path="res://scripts/aufgaben/submit_button.gd" id="3_s5g4q"]
 
-[node name="SubmitButton" type="Button"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s5g4q"]
+bg_color = Color(0.6, 0.6, 0.6, 0.49411765)
+
+[node name="SubmitButton" type="Button" unique_id=2094677560]
 custom_minimum_size = Vector2(113.725, 89.87)
 offset_left = 2.0
 offset_right = 115.725
 offset_bottom = 89.87
-theme_override_styles/normal = ExtResource("1_yavrx")
-theme_override_styles/disabled = ExtResource("1_yavrx")
+theme_override_colors/icon_normal_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_pressed_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_s5g4q")
 disabled = true
-icon = ExtResource("2_s5g4q")
+icon = ExtResource("1_yavrx")
 icon_alignment = 1
 script = ExtResource("3_s5g4q")

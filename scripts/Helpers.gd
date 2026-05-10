@@ -159,15 +159,16 @@ static func create_line_mesh_from_lines(
 
 	var vertices : PackedVector2Array
 	var uvs : PackedVector2Array
-	var normals : PackedVector2Array
+	var _normals : PackedVector2Array
 	var colors : PackedColorArray
 
 	# Temp arrays for building
 	var verts = []
 	var uvs_lst = []
-	var normals_lst = []
+	var _normals_lst = []
 	var colors_lst = []
 
+	@warning_ignore("integer_division")
 	var total_segments: int = lines.size() / 2
 	for i in range(total_segments):
 		var j: int = i * 2

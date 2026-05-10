@@ -38,67 +38,44 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_2b8sq")
 
-[node name="TrainingBg2" type="Sprite2D" parent="." unique_id=1239471227]
-position = Vector2(359.66754, 423.34216)
-scale = Vector2(-0.33806312, 0.37477344)
-
-[node name="BGProgressBar" type="ProgressBar" parent="." unique_id=950802691]
-unique_name_in_owner = true
+[node name="VBoxContainer2" type="VBoxContainer" parent="." unique_id=1919912232]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = -524.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="BGProgressBar" type="ProgressBar" parent="VBoxContainer2" unique_id=950802691]
+unique_name_in_owner = true
+layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 1
+size_flags_vertical = 3
 theme_override_styles/background = SubResource("StyleBoxEmpty_ewtj6")
 theme_override_styles/fill = SubResource("StyleBoxFlat_n8wwr")
 fill_mode = 3
 show_percentage = false
 script = ExtResource("3_pnaw5")
 
-[node name="TrainingBg" type="Sprite2D" parent="." unique_id=2053075127]
-position = Vector2(361.00003, 399)
-scale = Vector2(0.30342278, 0.31277615)
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer2" unique_id=269063169]
+layout_mode = 2
 
-[node name="SubmitButton" parent="." unique_id=513178914 instance=ExtResource("4_hfd0o")]
-layout_mode = 1
-anchors_preset = -1
-anchor_top = 0.59400004
-anchor_bottom = 0.59400004
-offset_left = 0.0
-offset_top = -0.32006836
-offset_right = 132.8711
-offset_bottom = 104.67993
-icon = null
-
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=269063169]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -170.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="InputZiffern" parent="VBoxContainer" unique_id=424564714 instance=ExtResource("5_d2jg5")]
+[node name="InputZiffern" parent="VBoxContainer2/VBoxContainer" unique_id=424564714 instance=ExtResource("5_d2jg5")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=327597112]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer2/VBoxContainer" unique_id=327597112]
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="VBoxContainer/HBoxContainer" unique_id=1438686429]
+[node name="Panel" type="Panel" parent="VBoxContainer2/VBoxContainer/HBoxContainer" unique_id=1438686429]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.86
 
-[node name="LabelChallenge" type="Label" parent="VBoxContainer/HBoxContainer/Panel" unique_id=862809482]
+[node name="LabelChallenge" type="Label" parent="VBoxContainer2/VBoxContainer/HBoxContainer/Panel" unique_id=862809482]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -117,14 +94,14 @@ text = "7 · 8"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel2" type="Panel" parent="VBoxContainer/HBoxContainer" unique_id=1929752515]
+[node name="Panel2" type="Panel" parent="VBoxContainer2/VBoxContainer/HBoxContainer" unique_id=1929752515]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.65
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/Panel2" unique_id=33903840]
+[node name="Label" type="Label" parent="VBoxContainer2/VBoxContainer/HBoxContainer/Panel2" unique_id=33903840]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -142,14 +119,14 @@ text = "="
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel3" type="Panel" parent="VBoxContainer/HBoxContainer" unique_id=913694004]
+[node name="Panel3" type="Panel" parent="VBoxContainer2/VBoxContainer/HBoxContainer" unique_id=913694004]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_2gsra")
 
-[node name="LabelAnswer" type="Label" parent="VBoxContainer/HBoxContainer/Panel3" unique_id=1995048021]
+[node name="LabelAnswer" type="Label" parent="VBoxContainer2/VBoxContainer/HBoxContainer/Panel3" unique_id=1995048021]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -168,12 +145,13 @@ text = "56"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PanelVerbal" type="Panel" parent="VBoxContainer" unique_id=1726702777]
+[node name="PanelVerbal" type="Panel" parent="VBoxContainer2/VBoxContainer" unique_id=1726702777]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="LabelVerbal" type="Label" parent="VBoxContainer/PanelVerbal" unique_id=719399371]
+[node name="LabelVerbal" type="Label" parent="VBoxContainer2/VBoxContainer/PanelVerbal" unique_id=719399371]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -192,7 +170,18 @@ text = "sieben mal acht"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="SubmitButton" parent="." unique_id=513178914 instance=ExtResource("4_hfd0o")]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.59400004
+anchor_bottom = 0.59400004
+offset_left = 0.0
+offset_top = -0.32006836
+offset_right = 132.8711
+offset_bottom = 104.67993
+icon = null
+
 [connection signal="ready_to_check" from="." to="." method="_on_ready_to_check"]
+[connection signal="delete_pressed" from="VBoxContainer2/VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_delete_pressed"]
+[connection signal="number_pressed" from="VBoxContainer2/VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_number_pressed"]
 [connection signal="pressed" from="SubmitButton" to="." method="_on_submit_button_pressed"]
-[connection signal="delete_pressed" from="VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_delete_pressed"]
-[connection signal="number_pressed" from="VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_number_pressed"]

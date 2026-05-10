@@ -84,7 +84,8 @@ func int_to_verbal(num: int) -> String:
 	return ""
 
 func get_ziffer_at(num: int, pos: int) -> int:
-	var teiler = 10 ** pos
+	var teiler: int = 10 ** pos
+	@warning_ignore("integer_division")
 	return (num / teiler) % 10
 
 func new_challenge():

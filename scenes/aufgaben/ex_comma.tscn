@@ -1,11 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://dtaiyxyv35u7n"]
+[gd_scene format=3 uid="uid://dtaiyxyv35u7n"]
 
 [ext_resource type="Script" uid="uid://c8t6ih5qhcfqj" path="res://scripts/aufgaben/ex_comma.gd" id="1_mucbg"]
-[ext_resource type="Texture2D" uid="uid://ditw1c4n8u6hp" path="res://resources/Proto/Training_BG_v2.png" id="2_gnti0"]
-[ext_resource type="Script" uid="uid://t5wyt375lwys" path="res://scripts/bg_progress_bar.gd" id="3_w6smp"]
+[ext_resource type="Script" uid="uid://cgl4lrvsh1g1w" path="res://scripts/bg_progress_bar.gd" id="3_w6smp"]
 [ext_resource type="PackedScene" uid="uid://bfbepcroguw3b" path="res://scenes/aufgaben/submit_button.tscn" id="4_0wye7"]
 [ext_resource type="PackedScene" uid="uid://dsulmb7ql4v57" path="res://scenes/aufgaben/input_ziffern.tscn" id="5_qdcoa"]
-[ext_resource type="Theme" uid="uid://150h0256rkgn" path="res://themes/taskFont.tres" id="6_dsrl5"]
+[ext_resource type="Theme" path="res://themes/taskFont.tres" id="6_dsrl5"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ewtj6"]
 
@@ -29,7 +28,7 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
 
-[node name="ExComma" type="Control"]
+[node name="ExComma" type="Control" unique_id=1801210838]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,12 +39,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_mucbg")
 
-[node name="TrainingBg2" type="Sprite2D" parent="."]
-position = Vector2(359.66754, 423.34216)
-scale = Vector2(-0.33806312, 0.37477344)
-texture = ExtResource("2_gnti0")
-
-[node name="BGProgressBar" type="ProgressBar" parent="."]
+[node name="BGProgressBar" type="ProgressBar" parent="." unique_id=120788677]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -62,12 +56,7 @@ fill_mode = 3
 show_percentage = false
 script = ExtResource("3_w6smp")
 
-[node name="TrainingBg" type="Sprite2D" parent="."]
-position = Vector2(361.00003, 399)
-scale = Vector2(0.30342278, 0.31277615)
-texture = ExtResource("2_gnti0")
-
-[node name="SubmitButton" parent="." instance=ExtResource("4_0wye7")]
+[node name="SubmitButton" parent="." unique_id=707027042 instance=ExtResource("4_0wye7")]
 visible = false
 layout_mode = 1
 anchors_preset = -1
@@ -78,7 +67,7 @@ offset_top = -0.32006836
 offset_right = 132.8711
 offset_bottom = 104.67993
 
-[node name="VBoxContainerStelle" type="VBoxContainer" parent="."]
+[node name="VBoxContainerStelle" type="VBoxContainer" parent="." unique_id=567483967]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
@@ -93,13 +82,13 @@ offset_right = 360.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainerStelle"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainerStelle" unique_id=1466354317]
 layout_mode = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainerStelle/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainerStelle/VBoxContainer" unique_id=446766723]
 layout_mode = 2
 
-[node name="ButtonEiner" type="Button" parent="VBoxContainerStelle/VBoxContainer/HBoxContainer2"]
+[node name="ButtonEiner" type="Button" parent="VBoxContainerStelle/VBoxContainer/HBoxContainer2" unique_id=1905858140]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(50, 71.55)
 layout_mode = 2
@@ -107,7 +96,7 @@ size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 42
 text = "Einer"
 
-[node name="ButtonZehntel" type="Button" parent="VBoxContainerStelle/VBoxContainer/HBoxContainer2"]
+[node name="ButtonZehntel" type="Button" parent="VBoxContainerStelle/VBoxContainer/HBoxContainer2" unique_id=2143268705]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
@@ -115,10 +104,10 @@ size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 42
 text = "Zehntel"
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainerStelle/VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainerStelle/VBoxContainer" unique_id=892135636]
 layout_mode = 2
 
-[node name="ButtonHundertstel" type="Button" parent="VBoxContainerStelle/VBoxContainer/HBoxContainer3"]
+[node name="ButtonHundertstel" type="Button" parent="VBoxContainerStelle/VBoxContainer/HBoxContainer3" unique_id=1233091982]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
@@ -126,7 +115,7 @@ size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 42
 text = "Hundertstel"
 
-[node name="ButtonTausendstel" type="Button" parent="VBoxContainerStelle/VBoxContainer/HBoxContainer3"]
+[node name="ButtonTausendstel" type="Button" parent="VBoxContainerStelle/VBoxContainer/HBoxContainer3" unique_id=1222739448]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
@@ -134,16 +123,16 @@ size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 42
 text = "Tausendstel"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainerStelle"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainerStelle" unique_id=228453710]
 layout_mode = 2
 
-[node name="Panel" type="Panel" parent="VBoxContainerStelle/HBoxContainer"]
+[node name="Panel" type="Panel" parent="VBoxContainerStelle/HBoxContainer" unique_id=1497493584]
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.86
 
-[node name="LabelChallengeStelle" type="Label" parent="VBoxContainerStelle/HBoxContainer/Panel"]
+[node name="LabelChallengeStelle" type="Label" parent="VBoxContainerStelle/HBoxContainer/Panel" unique_id=872960950]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -162,11 +151,11 @@ text = "7 · 8"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PanelVerbal" type="Panel" parent="VBoxContainerStelle"]
+[node name="PanelVerbal" type="Panel" parent="VBoxContainerStelle" unique_id=1724916807]
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 
-[node name="LabelVerbal" type="Label" parent="VBoxContainerStelle/PanelVerbal"]
+[node name="LabelVerbal" type="Label" parent="VBoxContainerStelle/PanelVerbal" unique_id=1926699708]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -184,7 +173,7 @@ text = "Welche Stelle?"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VBoxContainerWert" type="VBoxContainer" parent="."]
+[node name="VBoxContainerWert" type="VBoxContainer" parent="." unique_id=2028160823]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
@@ -196,22 +185,22 @@ offset_top = -170.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="InputZiffern" parent="VBoxContainerWert" instance=ExtResource("5_qdcoa")]
+[node name="InputZiffern" parent="VBoxContainerWert" unique_id=37148927 instance=ExtResource("5_qdcoa")]
 unique_name_in_owner = true
 layout_mode = 2
 theme = ExtResource("6_dsrl5")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainerWert"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainerWert" unique_id=2042418380]
 layout_mode = 2
 
-[node name="Panel" type="Panel" parent="VBoxContainerWert/HBoxContainer"]
+[node name="Panel" type="Panel" parent="VBoxContainerWert/HBoxContainer" unique_id=1290020347]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.8
 
-[node name="LabelFaktor" type="Label" parent="VBoxContainerWert/HBoxContainer/Panel"]
+[node name="LabelFaktor" type="Label" parent="VBoxContainerWert/HBoxContainer/Panel" unique_id=554853298]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -230,14 +219,14 @@ text = "1000"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel2" type="Panel" parent="VBoxContainerWert/HBoxContainer"]
+[node name="Panel2" type="Panel" parent="VBoxContainerWert/HBoxContainer" unique_id=1532516670]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.2
 
-[node name="LabelTimes" type="Label" parent="VBoxContainerWert/HBoxContainer/Panel2"]
+[node name="LabelTimes" type="Label" parent="VBoxContainerWert/HBoxContainer/Panel2" unique_id=543834301]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -255,7 +244,7 @@ text = "·"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel3" type="Panel" parent="VBoxContainerWert/HBoxContainer"]
+[node name="Panel3" type="Panel" parent="VBoxContainerWert/HBoxContainer" unique_id=1692361144]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
@@ -263,7 +252,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.15
 theme_override_styles/panel = SubResource("StyleBoxFlat_2gsra")
 
-[node name="LabelAnswerFaktor" type="Label" parent="VBoxContainerWert/HBoxContainer/Panel3"]
+[node name="LabelAnswerFaktor" type="Label" parent="VBoxContainerWert/HBoxContainer/Panel3" unique_id=1512365777]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -282,14 +271,14 @@ text = "100 m"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel4" type="Panel" parent="VBoxContainerWert/HBoxContainer"]
+[node name="Panel4" type="Panel" parent="VBoxContainerWert/HBoxContainer" unique_id=1842130202]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.3
 
-[node name="LabelEquals" type="Label" parent="VBoxContainerWert/HBoxContainer/Panel4"]
+[node name="LabelEquals" type="Label" parent="VBoxContainerWert/HBoxContainer/Panel4" unique_id=546190280]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -307,14 +296,14 @@ text = "="
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel5" type="Panel" parent="VBoxContainerWert/HBoxContainer"]
+[node name="Panel5" type="Panel" parent="VBoxContainerWert/HBoxContainer" unique_id=1204711823]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.71
 
-[node name="LabelUnit" type="Label" parent="VBoxContainerWert/HBoxContainer/Panel5"]
+[node name="LabelUnit" type="Label" parent="VBoxContainerWert/HBoxContainer/Panel5" unique_id=1828125643]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -333,17 +322,17 @@ text = "1 km"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainerWert"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainerWert" unique_id=247786563]
 layout_mode = 2
 
-[node name="PanelVerbal" type="Panel" parent="VBoxContainerWert/HBoxContainer2"]
+[node name="PanelVerbal" type="Panel" parent="VBoxContainerWert/HBoxContainer2" unique_id=748958661]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.75
 
-[node name="LabelVerbalWert" type="Label" parent="VBoxContainerWert/HBoxContainer2/PanelVerbal"]
+[node name="LabelVerbalWert" type="Label" parent="VBoxContainerWert/HBoxContainer2/PanelVerbal" unique_id=960708335]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -362,7 +351,7 @@ text = "wie viel ist ein Tausendstel?"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VBoxContainerLoesung" type="VBoxContainer" parent="."]
+[node name="VBoxContainerLoesung" type="VBoxContainer" parent="." unique_id=1238737744]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 12
@@ -373,21 +362,21 @@ offset_top = -170.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="InputZiffernLoesung" parent="VBoxContainerLoesung" instance=ExtResource("5_qdcoa")]
+[node name="InputZiffernLoesung" parent="VBoxContainerLoesung" unique_id=1183860472 instance=ExtResource("5_qdcoa")]
 unique_name_in_owner = true
 layout_mode = 2
 theme = ExtResource("6_dsrl5")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainerLoesung"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainerLoesung" unique_id=27319962]
 layout_mode = 2
 
-[node name="Panel" type="Panel" parent="VBoxContainerLoesung/HBoxContainer"]
+[node name="Panel" type="Panel" parent="VBoxContainerLoesung/HBoxContainer" unique_id=868227406]
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.86
 
-[node name="LabelChallengeLoesung" type="Label" parent="VBoxContainerLoesung/HBoxContainer/Panel"]
+[node name="LabelChallengeLoesung" type="Label" parent="VBoxContainerLoesung/HBoxContainer/Panel" unique_id=1246246011]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -406,13 +395,13 @@ text = "0,005 km"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PanelEqual" type="Panel" parent="VBoxContainerLoesung/HBoxContainer"]
+[node name="PanelEqual" type="Panel" parent="VBoxContainerLoesung/HBoxContainer" unique_id=1464628990]
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.75
 
-[node name="LabelEqual" type="Label" parent="VBoxContainerLoesung/HBoxContainer/PanelEqual"]
+[node name="LabelEqual" type="Label" parent="VBoxContainerLoesung/HBoxContainer/PanelEqual" unique_id=1759836870]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -430,14 +419,14 @@ text = "="
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel3" type="Panel" parent="VBoxContainerLoesung/HBoxContainer"]
+[node name="Panel3" type="Panel" parent="VBoxContainerLoesung/HBoxContainer" unique_id=584726964]
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.57
 theme_override_styles/panel = SubResource("StyleBoxFlat_2gsra")
 
-[node name="LabelAnswerLoesung" type="Label" parent="VBoxContainerLoesung/HBoxContainer/Panel3"]
+[node name="LabelAnswerLoesung" type="Label" parent="VBoxContainerLoesung/HBoxContainer/Panel3" unique_id=1158905513]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -456,16 +445,16 @@ text = "56"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainerLoesung"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainerLoesung" unique_id=1456006209]
 layout_mode = 2
 
-[node name="PanelVerbal" type="Panel" parent="VBoxContainerLoesung/HBoxContainer2"]
+[node name="PanelVerbal" type="Panel" parent="VBoxContainerLoesung/HBoxContainer2" unique_id=357800592]
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.75
 
-[node name="LabelVerbalLoesung" type="Label" parent="VBoxContainerLoesung/HBoxContainer2/PanelVerbal"]
+[node name="LabelVerbalLoesung" type="Label" parent="VBoxContainerLoesung/HBoxContainer2/PanelVerbal" unique_id=664800498]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8

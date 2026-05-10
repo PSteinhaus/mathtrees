@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://bmbhvyfb64x8p"]
+[gd_scene format=3 uid="uid://bmbhvyfb64x8p"]
 
 [ext_resource type="Script" uid="uid://c52nsrtvfwqy" path="res://scripts/aufgaben/ex_recognize_multiply.gd" id="1_a1oyf"]
-[ext_resource type="Texture2D" uid="uid://ditw1c4n8u6hp" path="res://resources/Proto/Training_BG_v2.png" id="2_teg2k"]
-[ext_resource type="Script" uid="uid://t5wyt375lwys" path="res://scripts/bg_progress_bar.gd" id="3_mgqca"]
+[ext_resource type="Script" uid="uid://cgl4lrvsh1g1w" path="res://scripts/bg_progress_bar.gd" id="3_mgqca"]
 [ext_resource type="PackedScene" uid="uid://bfbepcroguw3b" path="res://scenes/aufgaben/submit_button.tscn" id="4_3swye"]
 [ext_resource type="PackedScene" uid="uid://bpkk0coo4u2jj" path="res://scenes/aufgaben/input_ziffern_mal.tscn" id="5_a1oyf"]
 
@@ -12,7 +11,7 @@
 bg_color = Color(0.7, 0.6085333, 0.357, 1)
 anti_aliasing = false
 
-[node name="ExMultiply" type="Control"]
+[node name="ExMultiply" type="Control" unique_id=711768183]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,12 +22,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_a1oyf")
 
-[node name="TrainingBg2" type="Sprite2D" parent="."]
-position = Vector2(359.66754, 423.34216)
-scale = Vector2(-0.33806312, 0.37477344)
-texture = ExtResource("2_teg2k")
-
-[node name="BGProgressBar" type="ProgressBar" parent="."]
+[node name="BGProgressBar" type="ProgressBar" parent="." unique_id=515701653]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -45,12 +39,7 @@ fill_mode = 3
 show_percentage = false
 script = ExtResource("3_mgqca")
 
-[node name="TrainingBg" type="Sprite2D" parent="."]
-position = Vector2(361.00003, 399)
-scale = Vector2(0.30342278, 0.31277615)
-texture = ExtResource("2_teg2k")
-
-[node name="SubmitButton" parent="." instance=ExtResource("4_3swye")]
+[node name="SubmitButton" parent="." unique_id=172214245 instance=ExtResource("4_3swye")]
 visible = false
 layout_mode = 1
 anchors_preset = -1
@@ -61,7 +50,7 @@ offset_top = -0.32006836
 offset_right = 132.8711
 offset_bottom = 104.67993
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1130648021]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -71,21 +60,21 @@ offset_top = -170.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="InputZiffern" parent="VBoxContainer" instance=ExtResource("5_a1oyf")]
+[node name="InputZiffern" parent="VBoxContainer" unique_id=550647842 instance=ExtResource("5_a1oyf")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=392992384]
 layout_mode = 2
 
-[node name="Panel" type="Panel" parent="VBoxContainer/HBoxContainer"]
+[node name="Panel" type="Panel" parent="VBoxContainer/HBoxContainer" unique_id=323203514]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.86
 
-[node name="LabelAnswer" type="Label" parent="VBoxContainer/HBoxContainer/Panel"]
+[node name="LabelAnswer" type="Label" parent="VBoxContainer/HBoxContainer/Panel" unique_id=216750732]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -104,12 +93,12 @@ text = "7 · 8"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PanelVerbal" type="Panel" parent="VBoxContainer"]
+[node name="PanelVerbal" type="Panel" parent="VBoxContainer" unique_id=1214714152]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 
-[node name="LabelChallenge" type="Label" parent="VBoxContainer/PanelVerbal"]
+[node name="LabelChallenge" type="Label" parent="VBoxContainer/PanelVerbal" unique_id=2114709229]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8

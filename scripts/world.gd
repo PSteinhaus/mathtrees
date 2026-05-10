@@ -375,5 +375,5 @@ func _on_ex_zr_20_answer_checked(correct: bool) -> void:
 		%ExZR20.new_challenge()
 
 
-func _on_ex_zr_20_level_changed(old_level: int, new_level: int) -> void:
+func _on_ex_zr_20_level_changed(_old_level: int, _new_level: int) -> void:
 	$FractalTree.grow()

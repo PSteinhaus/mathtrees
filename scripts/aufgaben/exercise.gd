@@ -122,7 +122,9 @@ static func from_ex_type(ex_type: ExType) -> Exercise:
 
 func get_ziffer_at(num: int, pos: int) -> int:
 	var teiler = 10 ** pos
+	@warning_ignore("integer_division")
 	return (num / teiler) % 10
+
 func ziffer_verbal(num: int, pos: int) -> String:
 
 	match pos:
