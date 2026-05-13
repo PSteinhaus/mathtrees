@@ -73,7 +73,8 @@ class FracKernel:
 func _ready() -> void:
 	# initialize ghost tree and add it straight to the world (as it should be totally unmoved by anything
 	ghost_tree = Node2D.new()
-	Global.get_world().add_child.call_deferred(ghost_tree)
+	var root = get_tree().current_scene
+	root.add_child.call_deferred(ghost_tree)
 	
 	multimesh = MultiMesh.new()
 	multimesh.transform_format = MultiMesh.TRANSFORM_2D

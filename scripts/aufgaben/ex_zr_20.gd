@@ -3,6 +3,7 @@ extends Exercise
 var num1: int
 var num2: int
 var is_plus: bool
+var is_uebergang: bool
 static var latest_num1: int = -1
 static var latest_num2: int = -1
 
@@ -31,6 +32,7 @@ func new_challenge():
 	$SubmitButton.animateHide()
 	var accepted = false
 	is_plus = randi_range(0,1) == 0
+	is_uebergang = randi_range(0,1) == 0
 	while !accepted:
 		if is_plus:
 			num1 = randi_range(1,19)
@@ -39,6 +41,8 @@ func new_challenge():
 			num1 = randi_range(1,20)
 			num2 = randi_range(1, num1)
 		if num1 == latest_num1 && num2 == latest_num2:
+			continue
+		if is_uebergang && !((is_plus && num1 < 10 && num1 + num2 >= 10) || (!is_plus && num1 >= 10 && num1 - num2 < 10)):
 			continue
 		accepted = true
 	latest_num1 = num1

@@ -236,3 +236,75 @@ static func create_line_mesh_from_lines(
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, surface_array)
 
 	return mesh
+
+enum PaletteStyle {
+	ANALOGOUS,
+	#COMPLEMENTARY,
+	#TRIADIC,
+	#SPLIT_COMPLEMENTARY
+}
+
+static func generate_palette(style: PaletteStyle) -> Array[Color]:
+	var base_hue = randi_range(0, 359)
+
+	# Slightly muted values usually look nicer
+	var saturation = randf_range(0.55, 0.80)
+	var value = randf_range(0.55, 0.75)
+
+	var hues: Array[int] = []
+
+	match style:
+		PaletteStyle.ANALOGOUS:
+			hues = [
+				rotate_hue(base_hue, -25),
+				base_hue,
+				rotate_hue(base_hue, 25)
+			]
+
+		#PaletteStyle.COMPLEMENTARY:
+			#hues = [
+				#base_hue,
+				#rotate_hue(base_hue, 180),
+				#rotate_hue(base_hue, 210)
+			#]
+
+		#PaletteStyle.TRIADIC:
+			#hues = [
+				#base_hue,
+				#rotate_hue(base_hue, 120),
+				#rotate_hue(base_hue, 240)
+			#]
+
+		#PaletteStyle.SPLIT_COMPLEMENTARY:
+			#hues = [
+				#base_hue,
+				#rotate_hue(base_hue, 150),
+				#rotate_hue(base_hue, 210)
+			#]
+
+	var palette: Array[Color] = []
+
+	for hue in hues:
+		var color = Color.from_hsv(
+			hue / 360.0,
+			saturation,
+			value
+		)
+		value -= 0.21
+		saturation -= 0.1
+
+		palette.append(color)
+
+	return palette
+
+static func rotate_hue(hue: int, degrees: int) -> int:
+	return (hue + degrees + 360) % 360
+
+static func gacha_palette() -> Array[Color]:
+	match randi_range(1,6):
+		1: return [Color.from_string("#0D1B2A", Color.BLACK), Color.from_string("#1B263B", Color.BLACK), Color.from_string("#E0E1DD", Color.BLACK)]
+		2: return [Color.from_string("#363635", Color.BLACK), Color.from_string("#595A4A", Color.BLACK), Color.from_string("#B0FE76", Color.BLACK)]
+		3: return [Color.from_string("#93ACB5", Color.BLACK), Color.from_string("#F2F4FF", Color.BLACK), Color.from_string("#6C756B", Color.BLACK)]
+		4: return [Color.from_string("#96C5F7", Color.BLACK), Color.from_string("#A9D3FF", Color.BLACK), Color.from_string("#F2F4FF", Color.BLACK)]
+		5: return [Color.from_string("#A23E48", Color.BLACK), Color.from_string("C33B46", Color.BLACK), Color.from_string("#FF8C42", Color.BLACK)]
+		_: return [Color.from_string("#031D2E", Color.BLACK), Color.from_string("#06314B", Color.BLACK), Color.from_string("#000004", Color.BLACK)]
