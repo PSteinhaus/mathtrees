@@ -8,7 +8,7 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ewtj6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n8wwr"]
-bg_color = Color(0.25490198, 0.654902, 0.89411765, 0.39607844)
+bg_color = Color(1, 1, 1, 0.5176471)
 anti_aliasing = false
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2gsra"]
@@ -48,6 +48,9 @@ grow_vertical = 2
 
 [node name="BGProgressBar" type="ProgressBar" parent="VBoxContainer2" unique_id=950802691]
 unique_name_in_owner = true
+show_behind_parent = true
+z_index = -70
+z_as_relative = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3

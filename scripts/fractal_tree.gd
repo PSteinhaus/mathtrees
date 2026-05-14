@@ -4,6 +4,9 @@ class_name FractalTree
 # the mesh and texture for one segment
 # multimesh: MultiMesh
 
+## one of the predefined kernel types (set during generation)
+var k_type: int = -1
+
 # the following defines the structure of the fractal kernel
 class FracKernel:	
 	## the first point is explicitly (0., 0.)
@@ -13,6 +16,10 @@ class FracKernel:
 	
 	func add_point(pos: Vector2) -> void:
 		core_arm.push_back(pos)
+	
+	## position given as relative to the latest position
+	func add_point_rel(pos: Vector2) -> void:
+		core_arm.push_back(core_arm[-1] + pos)
 	
 	func add_child(k: FracKernel, index: int) -> void:
 		child_arms[k] = index
@@ -70,11 +77,20 @@ class FracKernel:
 				rots.push_back(r)
 		return rots
 
-func _ready() -> void:
+func reinit() -> void:
+	if ghost_tree:
+		var p = ghost_tree.get_parent()
+		if p:
+			p.remove_child(ghost_tree)
+		ghost_tree.queue_free()
+		
 	# initialize ghost tree and add it straight to the world (as it should be totally unmoved by anything
 	ghost_tree = Node2D.new()
 	var root = get_tree().current_scene
 	root.add_child.call_deferred(ghost_tree)
+
+func _ready() -> void:
+	reinit()
 	
 	multimesh = MultiMesh.new()
 	multimesh.transform_format = MultiMesh.TRANSFORM_2D
@@ -158,3 +174,61 @@ func update_multimesh_transforms() -> void:
 	var transforms: Array[Transform2D] = get_global_transforms()
 	multimesh.instance_count = transforms.size()
 	Helpers.set_multimesh_transforms_2d(multimesh, transforms, transforms.size())
+
+## generates a kernel based on a number of pre built types with some randomization
+func generate_kernel():
+	# reinit so that the ghost tree is clean
+	reinit()
+	k_type = randi_range(0,7)
+	#k_type = 3
+	var k = FracKernel.new()
+	match k_type:
+		0:
+			# two double segment arms: arching sideways
+			k.add_point(Vector2(-20., -50.))
+			k.add_point(Vector2(-70., -110.))
+			var k_branch0 = k.start_child_arm_from(0, Vector2(20., -50.))
+			k_branch0.add_point(Vector2(80., -120.))
+		1:
+			# two double segment arms: crossing 
+			k.add_point(Vector2(0., -50.))
+			k.add_point(Vector2(-50., -100.))
+			k.add_point(Vector2(5., -160.))
+			var k_branch0 = k.start_child_arm_from(1, Vector2(50., -50.))
+			k_branch0.add_point(Vector2(-5., -100.))
+		2:
+			# one double, one single segment arm: arching up
+			k.add_point(Vector2(-10., -110.))
+			k.add_point(Vector2(-30., -130.))
+			k.add_point(Vector2(-40., -190.))
+			var _k_branch0 = k.start_child_arm_from(1, Vector2(30., -50.))
+		3:
+			# three single segment arms: arching up (middle straight)
+			k.add_point(Vector2(0., -60.))
+			var _k_branch2 = k.start_child_arm_from(1, Vector2(-20., -60.))
+			var _k_branch0 = k.start_child_arm_from(1, Vector2( 0., -190.))
+			var _k_branch1 = k.start_child_arm_from(1, Vector2(20., -60.))
+		4:
+			# one double (straight up, then side), one single segment arm: arching up
+			k.add_point(Vector2(-75., -95.))
+			var k_branch0 = k.start_child_arm_from(0, Vector2(0., -130.))
+			k_branch0.add_point(Vector2(30., -140.))
+		5:
+			# start straight, then double single segment arm: arching up
+			k.add_point(Vector2(-0., -85.))
+			k.add_point(Vector2(-40., -135.))
+			var _k_branch0 = k.start_child_arm_from(1, Vector2(40., -50.))
+		6:
+			# three single segment arms: arching up (middle straight)
+			k.add_point(Vector2(0., -50.))
+			var _k_branch2 = k.start_child_arm_from(1, Vector2(-40., -60.))
+			var k_branch0 = k.start_child_arm_from(1, Vector2( 0., -60.))
+			k_branch0.add_point_rel(Vector2(0., -100.))
+			k_branch0.start_child_arm_from(1, Vector2(30., -40.))
+		_:
+			# two double segment arms: arching up
+			k.add_point(Vector2(-40., -50.))
+			k.add_point(Vector2(-70., -110.))
+			var k_branch0 = k.start_child_arm_from(0, Vector2(50., -50.))
+			k_branch0.add_point(Vector2(80., -120.))
+	kernel = k
