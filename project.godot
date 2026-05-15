@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Mathtrees"
-run/main_scene="uid://bbkaka3ackf22"
+run/main_scene="uid://bhxqfvqkntpqr"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 run/max_fps=60
 boot_splash/show_image=false

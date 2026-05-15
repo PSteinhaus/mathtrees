@@ -1,5 +1,9 @@
 extends Node2D
 
+@onready var frac_tree: FractalTree = %FractalTree
+@onready var bg: MeshInstance2D = %MeshInstanceBG
+@onready var music: AudioStreamPlayer = %Music
+
 var new_activated: bool = false
 
 var color_ground: Color
@@ -33,20 +37,19 @@ func _input(event):
 
 func regenerate_kernel() -> void:
 	print("regenerated kernel")
-	%FractalTree.generate_kernel()
-	%FractalTree.grow()
-	%FractalTree.grow()
-	%FractalTree.grow()
-	%FractalTree.grow()
-	%FractalTree.grow()
-	%FractalTree.grow()
+	frac_tree.generate_kernel()
+
 
 func _on_ex_zr_20_level_changed(old_level: int, new_level: int) -> void:
-	%FractalTree.grow()
+	frac_tree.grow()
 
 func _on_ex_zr_20_answer_checked(correct: bool) -> void:
 	# get a new challenge
 	if correct:
+		if randi_range(0,1) == 0:
+			%Pling2.play()
+		else:
+			%Pling1.play()
 		%ExZR20.new_challenge()
 		new_activated = true
 		%Button_new.visible = true
@@ -58,8 +61,8 @@ func set_palette(palette: Array[Color]):
 	
 	%MeshInstance2D.self_modulate = color_ground
 #	%MeshInstance2D2.self_modulate = color_ground
-	%FractalTree.self_modulate = color_tree
-	%MeshInstanceBG.self_modulate = color_bg
+	frac_tree.self_modulate = color_tree
+	bg.self_modulate = color_bg
 	
 	# also: set the progress bar color!
 	# but for that first check whether the ground color works as a contrast for both the background and the tree
