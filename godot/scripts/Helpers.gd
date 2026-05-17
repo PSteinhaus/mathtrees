@@ -104,6 +104,13 @@ static func get_node_leaves(node: Node) -> Array[Node]:
 			
 	return leaves
 
+## returns the number of children, including all descendents
+static func count_descendants(node: Node) -> int:
+	var count := node.get_child_count()
+	for child in node.get_children():
+		count += count_descendants(child)
+	return count
+
 static func create_convex_polygon_mesh_2d(poly_points: PackedVector2Array) -> ArrayMesh:
 	if poly_points.size() < 3:
 		return null

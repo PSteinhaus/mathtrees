@@ -156,7 +156,7 @@ func _ready() -> void:
 					#c2.grow_recursively(g_scale)
 	#$RT_Tree_Up.scale *= 1.8
 	
-	var k = FractalTree.FracKernel.new()
+	var k = FracKernel.new()
 	k.add_point(Vector2(-40., -50.))
 	k.add_point(Vector2(-70., -110.))
 	var k_branch0 = k.start_child_arm_from(0, Vector2(50., -50.))

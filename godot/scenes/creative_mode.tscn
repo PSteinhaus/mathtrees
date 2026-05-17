@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://bhxqfvqkntpqr"]
 
 [ext_resource type="Script" uid="uid://dad10pasn216o" path="res://scripts/creative_mode.gd" id="1_lslsu"]
-[ext_resource type="Script" uid="uid://bgyg384lruwgx" path="res://scripts/fractal_tree.gd" id="2_4fq4x"]
 [ext_resource type="PackedScene" uid="uid://i6gbqw570ug1" path="res://scenes/aufgaben/ex_zr_20.tscn" id="3_l7uvt"]
 [ext_resource type="Script" uid="uid://dsrsute6c1tkj" path="res://scripts/debug_label.gd" id="4_6s3r3"]
 [ext_resource type="AudioStream" uid="uid://cw3fp8gohgwbv" path="res://resources/audio/156414__felixblume__wind-blowing-into-some-cactus-spine-on-t_looped.ogg" id="5_6s3r3"]
@@ -25,12 +24,10 @@ position = Vector2(541.75, 961.75006)
 scale = Vector2(1084.5, 1924.5001)
 mesh = SubResource("QuadMesh_lslsu")
 
-[node name="FractalTree" type="MultiMeshInstance2D" parent="CreativeMode" unique_id=1831909861]
+[node name="FractalTree" type="FractalTreeOptimized" parent="CreativeMode" unique_id=416296202]
 unique_name_in_owner = true
 position = Vector2(536.1328, 1102.7234)
 scale = Vector2(1.56, 1.56)
-script = ExtResource("2_4fq4x")
-metadata/_custom_type_script = "uid://bgyg384lruwgx"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="CreativeMode" unique_id=1015353]
 

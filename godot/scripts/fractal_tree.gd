@@ -6,9 +6,12 @@ class_name FractalTree
 
 ## one of the predefined kernel types (set during generation)
 var k_type: int = -1
+## maximum number of nodes allowed for a tree (to cap of exponential growth somewhere)
+var max_nodes: int = 2000
+var current_nodes: int = 0
 
 # the following defines the structure of the fractal kernel
-class FracKernel:	
+class FracKernel2:
 	## the first point is explicitly (0., 0.)
 	var core_arm: Array[Vector2] = [Vector2(0., 0.)]
 	## a nested structure of a child kernels and at which point of the core_arm they attach
@@ -83,7 +86,8 @@ func reinit() -> void:
 		if p:
 			p.remove_child(ghost_tree)
 		ghost_tree.queue_free()
-		
+	current_nodes = 0
+	
 	# initialize ghost tree and add it straight to the world (as it should be totally unmoved by anything
 	ghost_tree = Node2D.new()
 	var root = get_tree().current_scene
@@ -118,6 +122,26 @@ var kernel: FracKernel:
 		kernel = new_kernel
 		# calculate the mesh for the multimesh based upon this kernel
 		update_mesh_for_kernel()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
+		grow()
 ## This tree models how the tree of kernels that we want to draw using the Multimesh
 ## Each node in this tree represents a kernel
 ## The node's position represents the starting point relative to the parent
@@ -127,16 +151,20 @@ var kernel: FracKernel:
 var ghost_tree: Node2D
 
 ## grow the fractal tree by one iteration, based on the kernel
-func grow(use_scale_tween: bool = true) -> void:
+## returns whether the tree managed to grow (somewhere); it doesn't do if there are too many nodes already
+func grow(use_scale_tween: bool = true) -> bool:
 	if kernel == null or ghost_tree == null:
-		return
+		return false
 
+	var did_grow: bool = false
 	var kernel_leaves: Array[Vector2] = kernel.get_leaves()
 	var kernel_rots: Array[float] = kernel.get_leave_rotations()
 	var node_leaves: Array[Node] = Helpers.get_node_leaves(ghost_tree)
 
 	for node in node_leaves:
 		for i: int in range(kernel_leaves.size()):
+			if current_nodes >= max_nodes:
+				break
 			var leaf_node := SwayNode2D.new()
 			var leaf_pos = kernel_leaves[i]
 			var leaf_rot = kernel_rots[i]
@@ -151,7 +179,10 @@ func grow(use_scale_tween: bool = true) -> void:
 			leaf_node.original_rot = leaf_rot	# for swaying in the wind, see SwayNode2D
 			leaf_node.phase_shift =  leaf_rot * 2.	# for swaying in the wind, see SwayNode2D; also: randf() * TAU makes the tree appear sick ;)
 			node.add_child(leaf_node)
+			current_nodes += 1
+			did_grow = true
 	update_multimesh_transforms()
+	return did_grow
 
 ## iterates through the kernel to translate all its arm segments into transform2Ds of the segment
 ## given in the mm Multimesh

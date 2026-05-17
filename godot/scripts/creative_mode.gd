@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var frac_tree: FractalTree = %FractalTree
+@onready var frac_tree = %FractalTree
 @onready var bg: MeshInstance2D = %MeshInstanceBG
 @onready var music: AudioStreamPlayer = %Music
 
@@ -15,7 +15,7 @@ var palette_index: int = 0
 func _ready() -> void:
 	#var palette = Helpers.generate_palette(Helpers.PaletteStyle.values().pick_random())
 	set_palette(Helpers.gacha_palette())
-	regenerate_kernel()
+	call_deferred("regenerate_kernel")
 	
 	%Button_new.visible = false
 	
