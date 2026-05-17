@@ -122,26 +122,7 @@ var kernel: FracKernel:
 		kernel = new_kernel
 		# calculate the mesh for the multimesh based upon this kernel
 		update_mesh_for_kernel()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
-		grow()
+
 ## This tree models how the tree of kernels that we want to draw using the Multimesh
 ## Each node in this tree represents a kernel
 ## The node's position represents the starting point relative to the parent
