@@ -48,3 +48,9 @@ impl Default for GhostNode {
         }
     }
 }
+
+impl GhostNode {
+    pub fn global_pos(&self) -> Vector2 {
+        return self.global.origin
+    }
+}

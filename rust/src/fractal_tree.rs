@@ -19,9 +19,7 @@ pub struct FractalTreeOptimized {
     #[export]
     max_nodes: i32,
 
-    current_nodes: i32,
     k_type: i32,
-
     kernel: Option<Gd<FracKernel>>,
     ghost_tree: GhostTree,
     root_node: usize,
@@ -37,7 +35,6 @@ impl IMultiMeshInstance2D for FractalTreeOptimized {
         Self {
             base,
             max_nodes: 15000,
-            current_nodes: 0,
             k_type: -1,
             kernel: None,
             ghost_tree: tree,
@@ -47,8 +44,6 @@ impl IMultiMeshInstance2D for FractalTreeOptimized {
     }
 
     fn ready(&mut self) {
-        self.reinit();
-
         let mut multimesh = MultiMesh::new_gd();
         multimesh.set_transform_format(
             godot::classes::multi_mesh::TransformFormat::TRANSFORM_2D,
@@ -73,10 +68,13 @@ use crate::optimized_helpers::OptimizedHelpers;
 impl FractalTreeOptimized {
     #[func]
     pub fn reinit(&mut self) {
-        self.current_nodes = 0;
-
         self.ghost_tree.reset();
         self.root_node = self.ghost_tree.create_root();
+    }
+
+    #[func]
+    pub fn node_count(& self) -> u32 {
+        self.ghost_tree.nodes.len() as u32
     }
 
     #[func]
@@ -119,11 +117,50 @@ impl FractalTreeOptimized {
 
         let kernel_rots =
             kernel.bind().get_leave_rotations();
+        
+        let make_ghost_node = |pos, rot, final_scale| GhostNode {
+            parent: None,
+        
+            children_start: 0,
+            children_count: 0,
+        
+            position: pos,
+            rotation: rot,
+        
+            // start invisible
+            scale: Vector2::ZERO,
+        
+            // animation target
+            target_scale: final_scale,
+        
+            // 0 -> 1 over time
+            growth: 0.0,
+        
+            // seconds^-1
+            // 0.2 means ~5 seconds
+            growth_speed: 0.2,
+        
+            original_rotation: rot,
+            phase_shift: rot * 2.0,
+        
+            global: Transform2D::IDENTITY,
+        };
 
         let mut did_grow = false;
 
         let node_count =
             self.ghost_tree.nodes.len();
+        
+        if node_count == 0 {
+            // no root anymore -> recreate it
+            let node = make_ghost_node(Vector2::ZERO, 0., Vector2::ONE);
+            self.ghost_tree.create_root_with(node);
+            // and let it grow (animate it)
+            // register for animation
+            self.ghost_tree
+            .growing_nodes
+            .push(0);
+        }
 
         let mut leaves = Vec::new();
 
@@ -135,7 +172,7 @@ impl FractalTreeOptimized {
 
         for leaf_idx in leaves {
             for i in 0..kernel_leaves.len() {
-                if self.current_nodes >= self.max_nodes {
+                if self.ghost_tree.nodes.len() as i32 >= self.max_nodes {
                     break;
                 }
 
@@ -147,33 +184,7 @@ impl FractalTreeOptimized {
 
                 let final_scale = Vector2::ONE * 0.7;
 
-                let node = GhostNode {
-                    parent: None,
-
-                    children_start: 0,
-                    children_count: 0,
-
-                    position: pos,
-                    rotation: rot,
-
-                    // start invisible
-                    scale: Vector2::ZERO,
-
-                    // animation target
-                    target_scale: final_scale,
-
-                    // 0 -> 1 over time
-                    growth: 0.0,
-
-                    // seconds^-1
-                    // 0.2 means ~5 seconds
-                    growth_speed: 0.2,
-
-                    original_rotation: rot,
-                    phase_shift: rot * 2.0,
-
-                    global: Transform2D::IDENTITY,
-                };
+                let node = make_ghost_node(pos, rot, final_scale);
 
                 let node_idx = self.ghost_tree.add_child(
                     leaf_idx,
@@ -184,8 +195,6 @@ impl FractalTreeOptimized {
                 self.ghost_tree
                     .growing_nodes
                     .push(node_idx);
-
-                self.current_nodes += 1;
 
                 did_grow = true;
             }
@@ -352,4 +361,27 @@ impl FractalTreeOptimized {
 
         self.update_mesh_for_kernel();
     }
+
+    /// returns the detached subtree
+    #[func]
+    pub fn detach_closest_subtree_at(&mut self, local_pos: Vector2) -> Option<Gd<FractalTreeOptimized>> {
+        if let Some(idx) = self.ghost_tree.find_closest_node(local_pos)
+        {
+            const DIST_THRESHOLD: f32 = 20.0;
+            let _r: &GhostNode = self.ghost_tree.get_root();
+            let n: &GhostNode = self.ghost_tree.get_node(idx);
+            if local_pos.distance_to(n.global_pos()) <= DIST_THRESHOLD {
+                let detached: GhostTree = self.ghost_tree.extract_subtree(idx);
+                let mut detached_fractal_tree = FractalTreeOptimized::new_alloc();
+                detached_fractal_tree.bind_mut().ghost_tree = detached;
+                detached_fractal_tree.bind_mut().k_type = self.k_type;
+                detached_fractal_tree.bind_mut().kernel = self.kernel.clone();
+                return Some(detached_fractal_tree)
+            }
+        }
+        None
+    }
+
+    #[func]
+    pub fn root_scale(&self) -> Vector2 { return self.ghost_tree.get_root().scale }
 }

@@ -55,17 +55,6 @@ func tween_merge_root_points(rt: RT_Tree, offset: int = 50):
 			)
 			#print("c_point: "+str(c_point))
 
-func screen_to_world(screen_pos: Vector2) -> Vector2:
-	var inv = camera.get_canvas_transform().affine_inverse()
-	return inv * screen_pos
-
-func camera_global_rect() -> Rect2:
-	var viewport_size = camera.get_viewport_rect().size
-	var half_size = viewport_size * 0.5 * camera.zoom
-	var center = camera.global_position
-	var top_left = center - half_size
-	return Rect2(top_left, half_size * 2.)
-
 ## initial boulder generation for the whole world (for now)
 func generate_boulders():
 	const WORLD_RADIUS: float = 18000.	# how far to each side boulders should be generated
@@ -201,7 +190,7 @@ func _process(delta: float) -> void:
 
 var cached_boulder_rect = null
 func update_visible_boulders():
-	var c_rect = camera_global_rect()
+	var c_rect = camera.camera_global_rect()
 	var boulder_rect = Rect2i(boulder_map.global_to_coordinate(c_rect.position), boulder_map.global_to_coordinate(c_rect.size))
 	if boulder_rect != cached_boulder_rect:
 		#print("RECALC "+str(randi()))
@@ -216,7 +205,7 @@ func grow_towards_touch(delta: float) -> void:
 	grow_cooldown = 0
 	var latest_point: Vector2 = latest_root_point_local()
 	# Convert from screen to world, then to target_node local
-	var current_touch_global = screen_to_world(current_touch_screen)
+	var current_touch_global = camera.screen_to_world(current_touch_screen)
 	var current_touch_local = current_tree.to_local(current_touch_global)
 	var grow_vec: Vector2 = current_touch_local - latest_point
 	# grow into the direction of the touch, but only as far as permitted per second
@@ -271,7 +260,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _update_touch_local(screen_pos: Vector2) -> void:
 	current_touch_screen = screen_pos
-	var global_pos = screen_to_world(screen_pos)
+	var global_pos = camera.screen_to_world(screen_pos)
 	var latest_point = latest_root_point_global()
 	if latest_point == null:
 		camera.target = global_pos

@@ -1,11 +1,14 @@
 [gd_scene format=3 uid="uid://bhxqfvqkntpqr"]
 
 [ext_resource type="Script" uid="uid://dad10pasn216o" path="res://scripts/creative_mode.gd" id="1_lslsu"]
+[ext_resource type="Script" uid="uid://dag5jq8aj6ti8" path="res://scripts/camera_2d.gd" id="3_6s3r3"]
 [ext_resource type="PackedScene" uid="uid://i6gbqw570ug1" path="res://scenes/aufgaben/ex_zr_20.tscn" id="3_l7uvt"]
 [ext_resource type="Script" uid="uid://dsrsute6c1tkj" path="res://scripts/debug_label.gd" id="4_6s3r3"]
 [ext_resource type="AudioStream" uid="uid://cw3fp8gohgwbv" path="res://resources/audio/156414__felixblume__wind-blowing-into-some-cactus-spine-on-t_looped.ogg" id="5_6s3r3"]
 [ext_resource type="AudioStream" uid="uid://c56aebdw3ct16" path="res://resources/audio/chimes-gong-1.ogg" id="6_6s3r3"]
 [ext_resource type="AudioStream" uid="uid://bswlclv7wuf7s" path="res://resources/audio/chimes-gong-2.ogg" id="7_6s3r3"]
+[ext_resource type="AudioStream" uid="uid://c1fedswbo1g7i" path="res://resources/audio/chop_2.ogg" id="8_ox5tr"]
+[ext_resource type="AudioStream" uid="uid://nxdwy5htrh2u" path="res://resources/audio/crunch_1.ogg" id="9_rpeom"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_lslsu"]
 
@@ -24,7 +27,7 @@ position = Vector2(541.75, 961.75006)
 scale = Vector2(1084.5, 1924.5001)
 mesh = SubResource("QuadMesh_lslsu")
 
-[node name="FractalTree" type="FractalTreeOptimized" parent="CreativeMode" unique_id=416296202]
+[node name="FractalTree" type="FractalTreeOptimized" parent="CreativeMode" unique_id=1851566928]
 unique_name_in_owner = true
 position = Vector2(536.1328, 1102.7234)
 scale = Vector2(1.56, 1.56)
@@ -56,6 +59,11 @@ position = Vector2(540.1328, 1981.7234)
 scale = Vector2(1908.4272, 1853.4467)
 mesh = SubResource("SphereMesh_lslsu")
 
+[node name="Camera2D" type="Camera2D" parent="CreativeMode" unique_id=10701360]
+position = Vector2(540, 960)
+script = ExtResource("3_6s3r3")
+target = Vector2(540, 960)
+
 [node name="ExZR20" parent="." unique_id=166979938 instance=ExtResource("3_l7uvt")]
 unique_name_in_owner = true
 
@@ -74,6 +82,20 @@ volume_db = -20.071
 unique_name_in_owner = true
 stream = ExtResource("7_6s3r3")
 volume_db = -20.982
+
+[node name="Chop" type="AudioStreamPlayer" parent="." unique_id=923231178]
+unique_name_in_owner = true
+stream = ExtResource("8_ox5tr")
+volume_db = -4.561
+pitch_scale = 0.93
+max_polyphony = 5
+
+[node name="Crunch" type="AudioStreamPlayer" parent="." unique_id=1241142483]
+unique_name_in_owner = true
+stream = ExtResource("9_rpeom")
+volume_db = 7.299
+pitch_scale = 0.44
+max_polyphony = 2
 
 [connection signal="pressed" from="CreativeMode/CanvasLayer/Button_new" to="CreativeMode" method="_on_button_new_pressed"]
 [connection signal="answer_checked" from="ExZR20" to="CreativeMode" method="_on_ex_zr_20_answer_checked"]

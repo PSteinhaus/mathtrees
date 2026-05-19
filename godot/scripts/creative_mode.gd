@@ -3,6 +3,7 @@ extends Node2D
 @onready var frac_tree = %FractalTree
 @onready var bg: MeshInstance2D = %MeshInstanceBG
 @onready var music: AudioStreamPlayer = %Music
+@onready var camera: Camera2D = $Camera2D
 
 var new_activated: bool = false
 
@@ -34,10 +35,32 @@ func _input(event):
 			print("set palette to index: "+str(palette_index))
 		elif event.keycode == KEY_F:
 			regenerate_kernel()
-
+	elif (event is InputEventScreenDrag or (event is InputEventScreenTouch and !event.canceled)) and event.index == 0:
+		var global_touch: Vector2 = camera.screen_to_world(event.position)
+		var local_touch: Vector2 = frac_tree.to_local(global_touch)
+		var nodes_before: int = frac_tree.node_count()
+		var detached_tree = frac_tree.detach_closest_subtree_at(local_touch)
+		if detached_tree != null:
+			var play_pos: float = %Crunch.get_playback_position()
+			if play_pos == 0. || play_pos > 0.04:
+				%Crunch.play()
+				%Crunch.pitch_scale = 1.0 - 0.6 * ((float(detached_tree.node_count()) / nodes_before) ** 0.3)
+		
 func regenerate_kernel() -> void:
 	print("regenerated kernel")
 	frac_tree.generate_kernel()
+	frac_tree.grow()
+	frac_tree.grow()
+	frac_tree.grow()
+	frac_tree.grow()
+	frac_tree.grow()
+	frac_tree.grow()
+	frac_tree.grow()
+	frac_tree.grow()
+	frac_tree.grow()
+	frac_tree.grow()
+	frac_tree.grow()
+	frac_tree.grow()
 
 
 func _on_ex_zr_20_level_changed(old_level: int, new_level: int) -> void:
@@ -46,10 +69,7 @@ func _on_ex_zr_20_level_changed(old_level: int, new_level: int) -> void:
 func _on_ex_zr_20_answer_checked(correct: bool) -> void:
 	# get a new challenge
 	if correct:
-		if randi_range(0,1) == 0:
-			%Pling2.play()
-		else:
-			%Pling1.play()
+		%Pling2.play()
 		%ExZR20.new_challenge()
 		new_activated = true
 		%Button_new.visible = true

@@ -7,12 +7,15 @@ edition = "2024"
 crate-type = ["cdylib"]  # Compile this crate to a dynamic C library.
 
 [dependencies]
-godot = "0.5.2"
+godot = { version = "0.5.2", features = ["experimental-threads"] }
 
 # comment out the following for faster prototyping
 [profile.release]
 opt-level = 3
 lto = "fat"
 codegen-units = 1
-panic = "abort"
 strip = true
+
+[profile.dev]
+debug = true
+panic = "unwind"  # ← Essential: lets panic hook run instead of silent abort

@@ -1,12 +1,13 @@
 use godot::prelude::*;
 
-struct MyExtension;
-mod fractal_tree;
-mod frac_kernel;
-mod sway_node_2d;
+pub mod fractal_tree;
+pub mod frac_kernel;
+pub mod sway_node_2d;
 mod ghost_node;
 mod ghost_tree;
-mod optimized_helpers;
+pub mod optimized_helpers;
+
+struct MyExtension;
 
 #[gdextension]
 unsafe impl ExtensionLibrary for MyExtension {}

@@ -23,13 +23,18 @@ impl GhostTree {
         self.growing_nodes.clear();
     }
 
-    /// creates root node
     pub fn create_root(&mut self) -> usize {
+        self.create_root_with(GhostNode::default())
+    }
+
+    pub fn create_root_with(&mut self, node: GhostNode) -> usize {
         let idx = self.nodes.len();
-
-        self.nodes.push(GhostNode::default());
-
+        self.nodes.push(node);
         idx
+    }
+
+    pub fn get_root(&self) -> &GhostNode {
+        &self.nodes[0]
     }
 
     pub fn add_child(
@@ -55,6 +60,10 @@ impl GhostTree {
 
         idx
     }
+
+    pub fn get_node(&self, id: usize) -> &GhostNode {
+        return &self.nodes[id]
+    }
 }
 
 impl GhostNode {
@@ -74,33 +83,27 @@ impl GhostTree {
         root: usize,
         time: f32,
     ) {
-        self.nodes[root].global = Transform2D::IDENTITY;
-
-        let mut stack = vec![root];
-
-        while let Some(idx) = stack.pop() {
-            let parent_global = self.nodes[idx].global;
-
-            let start = self.nodes[idx].children_start;
-            let count = self.nodes[idx].children_count;
-
+        if self.nodes.get(root).is_none() { return }
+        let mut stack = vec![(root, Transform2D::IDENTITY)];
+    
+        while let Some((idx, parent_global)) = stack.pop() {
+            let node = &mut self.nodes[idx];
+    
+            // apply sway to every node (including root)
+            let sway = (time * 0.2 + node.phase_shift).sin() * 0.18;
+            node.rotation = node.original_rotation + sway;
+    
+            // compute global transform
+            let local = node.local_transform();
+            node.global = parent_global * local;
+    
+            // push children with this node's global as their parent
+            let start = node.children_start;
+            let count = node.children_count;
+    
             for i in 0..count {
                 let child_idx = self.children[start + i];
-
-                let node = &mut self.nodes[child_idx];
-
-                // sway
-                let sway =
-                    (time * 0.2 + node.phase_shift).sin() * 0.18;
-
-                node.rotation =
-                    node.original_rotation + sway;
-
-                let local = node.local_transform();
-
-                node.global = parent_global * local;
-
-                stack.push(child_idx);
+                stack.push((child_idx, node.global));
             }
         }
     }
@@ -174,4 +177,204 @@ fn ease_out_back(t: f32) -> f32 {
 
     1.0 + c3 * (t - 1.0).powi(3)
         + c1 * (t - 1.0).powi(2)
+}
+
+impl GhostTree {
+    pub fn find_closest_node(
+        &self,
+        position: Vector2,
+    ) -> Option<usize> {
+        let mut best_idx = None;
+        let mut best_dist = f32::MAX;
+
+        for (i, node) in self.nodes.iter().enumerate() {
+            let node_pos = node.global_pos();
+
+            let dist = node_pos.distance_squared_to(position);
+
+            if dist < best_dist {
+                best_dist = dist;
+                best_idx = Some(i);
+            }
+        }
+
+        best_idx
+    }
+
+    pub fn collect_subtree(
+        &self,
+        root: usize,
+    ) -> Vec<usize> {
+        let mut result = Vec::new();
+        let mut stack = vec![root];
+
+        while let Some(idx) = stack.pop() {
+            result.push(idx);
+
+            let node = &self.nodes[idx];
+
+            for i in 0..node.children_count {
+                let child_idx =
+                    self.children[node.children_start + i];
+
+                stack.push(child_idx);
+            }
+        }
+
+        result
+    }
+}
+
+use std::{collections::{HashMap, HashSet}, usize};
+
+impl GhostTree {
+    pub fn extract_subtree(
+        &mut self,
+        root_idx: usize,
+    ) -> GhostTree {
+        // all nodes to move
+        let subtree_nodes =
+            self.collect_subtree(root_idx);
+
+        let subtree_set: HashSet<usize> =
+            subtree_nodes.iter().copied().collect();
+
+        //
+        // BUILD NEW TREE
+        //
+
+        let mut new_tree = GhostTree::new();
+
+        // old idx -> new idx
+        let mut remap = HashMap::new();
+
+        // clone nodes
+        for old_idx in &subtree_nodes {
+            let mut node =
+                self.nodes[*old_idx].clone();
+
+            node.parent = None;
+            node.children_count = 0;
+            node.children_start = 0;
+
+            let new_idx = new_tree.nodes.len();
+
+            new_tree.nodes.push(node);
+
+            remap.insert(*old_idx, new_idx);
+        }
+
+        // rebuild hierarchy
+        for old_idx in &subtree_nodes {
+            let old_node = &self.nodes[*old_idx];
+
+            let new_idx = remap[old_idx];
+
+            for i in 0..old_node.children_count {
+                let old_child =
+                    self.children
+                        [old_node.children_start + i];
+
+                if !subtree_set.contains(&old_child) {
+                    continue;
+                }
+
+                let new_child =
+                    remap[&old_child];
+
+                new_tree.children.push(new_child);
+                let node_id = new_tree.children.len() - 1;
+                new_tree.growing_nodes.push(node_id);   // adding all nodes as growing nodes should be ok, as they get checked and thrown out immediately, if they are not growing
+
+                let parent =
+                    &mut new_tree.nodes[new_idx];
+
+                if parent.children_count == 0 {
+                    parent.children_start = node_id;
+                }
+
+                parent.children_count += 1;
+
+                new_tree.nodes[new_child].parent =
+                    Some(new_idx);
+            }
+        }
+
+        //
+        // REBUILD CURRENT TREE
+        //
+
+        let keep_nodes: Vec<usize> =
+            (0..self.nodes.len())
+                .filter(|i| !subtree_set.contains(i))
+                .collect();
+
+        let old_nodes =
+            std::mem::take(&mut self.nodes);
+
+        let old_children =
+            std::mem::take(&mut self.children);
+        
+        let old_growing =
+            std::mem::take(&mut self.growing_nodes);
+
+        let mut remap_old = HashMap::new();
+
+        for old_idx in &keep_nodes {
+            let mut node =
+                old_nodes[*old_idx].clone();
+
+            node.parent = None;
+            node.children_count = 0;
+            node.children_start = 0;
+
+            let new_idx = self.nodes.len();
+
+            self.nodes.push(node);
+
+            remap_old.insert(*old_idx, new_idx);
+        }
+
+        for old_idx in &keep_nodes {
+            let old_node = &old_nodes[*old_idx];
+
+            let new_idx = remap_old[old_idx];
+
+            for i in 0..old_node.children_count {
+                let old_child =
+                    old_children
+                        [old_node.children_start + i];
+
+                if subtree_set.contains(&old_child) {
+                    continue;
+                }
+
+                let new_child =
+                    remap_old[&old_child];
+
+                self.children.push(new_child);
+
+                let parent =
+                    &mut self.nodes[new_idx];
+
+                if parent.children_count == 0 {
+                    parent.children_start =
+                        self.children.len() - 1;
+                }
+
+                parent.children_count += 1;
+
+                self.nodes[new_child].parent =
+                    Some(new_idx);
+            }
+        }
+
+        for old_idx in &old_growing {
+            if let Some(new_id) = remap_old.get(old_idx) {
+                self.growing_nodes.push(*new_id)
+            }
+        }
+
+        new_tree
+    }
 }
