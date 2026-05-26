@@ -26,9 +26,15 @@ impl IRefCounted for FracKernel {
 
 #[godot_api]
 impl FracKernel {
+    pub fn get_arm_pos(&self, i: usize,) -> Option<Vector2> {
+        self.core_arm.get(i).copied()
+    }
+
     #[func]
     pub fn add_point(&mut self, pos: Vector2) {
-        self.core_arm.push(pos);
+        if Some(&pos) != self.core_arm.last() {
+            self.core_arm.push(pos);
+        }
     }
 
     #[func]
@@ -54,6 +60,10 @@ impl FracKernel {
         self.child_arms.push((child.clone(), start_index));
 
         child
+    }
+
+    pub fn arm_len(&self) -> usize {
+        self.core_arm.len()
     }
 
     #[func]
@@ -134,5 +144,85 @@ impl FracKernel {
         }
 
         rots
+    }
+
+    pub fn find_closest_point_owner(
+        &self,
+        target: Vector2,
+    ) -> Option<(Gd<FracKernel>, usize)> {
+        let mut best_dist_sq = f32::INFINITY;
+        let mut best: Option<(Gd<FracKernel>, usize)> = None;
+    
+        self.find_closest_point_owner_recursive(
+            target,
+            Vector2::ZERO,
+            &mut best_dist_sq,
+            &mut best,
+        );
+    
+        best
+    }
+    
+    fn find_closest_point_owner_recursive(
+        &self,
+        target: Vector2,
+        offset: Vector2,
+        best_dist_sq: &mut f32,
+        best: &mut Option<(Gd<FracKernel>, usize)>,
+    ) {
+        // Search local points
+        for (i, p) in self.core_arm.iter().enumerate() {
+            let world_pos = offset + *p;
+            let dist_sq = world_pos.distance_squared_to(target);
+    
+            if dist_sq < *best_dist_sq {
+                *best_dist_sq = dist_sq;
+                *best = Some((self.to_gd(), i));
+            }
+        }
+    
+        // Search children
+        for (child, idx) in &self.child_arms {
+            let child_offset = offset + self.core_arm[*idx as usize];
+    
+            child.bind().find_closest_point_owner_recursive(
+                target,
+                child_offset,
+                best_dist_sq,
+                best,
+            );
+        }
+    }
+
+    pub fn get_descendant_position(
+        &self,
+        target: &Gd<FracKernel>,
+    ) -> Option<Vector2> {
+        // self is at (0,0) relative to itself
+        self.get_descendant_position_recursive(target, Vector2::ZERO)
+    }
+    
+    fn get_descendant_position_recursive(
+        &self,
+        target: &Gd<FracKernel>,
+        offset: Vector2,
+    ) -> Option<Vector2> {
+        // Compare object identity
+        if self.to_gd().instance_id() == target.instance_id() {
+            return Some(offset);
+        }
+    
+        for (child, idx) in &self.child_arms {
+            let child_offset = offset + self.core_arm[*idx as usize];
+    
+            if let Some(pos) = child
+                .bind()
+                .get_descendant_position_recursive(target, child_offset)
+            {
+                return Some(pos);
+            }
+        }
+    
+        None
     }
 }

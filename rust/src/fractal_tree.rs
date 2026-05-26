@@ -3,6 +3,7 @@ use godot::classes::{
     IMultiMeshInstance2D,
     Mesh,
     MultiMesh,
+    ArrayMesh,
     MultiMeshInstance2D,
     RandomNumberGenerator,
 };
@@ -43,15 +44,6 @@ impl IMultiMeshInstance2D for FractalTreeOptimized {
         }
     }
 
-    fn ready(&mut self) {
-        let mut multimesh = MultiMesh::new_gd();
-        multimesh.set_transform_format(
-            godot::classes::multi_mesh::TransformFormat::TRANSFORM_2D,
-        );
-
-        self.base_mut().set_multimesh(&multimesh);
-    }
-
     fn process(&mut self, delta: f64) {
         self.time += delta as f32;
 
@@ -66,10 +58,34 @@ impl IMultiMeshInstance2D for FractalTreeOptimized {
 use crate::optimized_helpers::OptimizedHelpers;
 #[godot_api]
 impl FractalTreeOptimized {
+    fn ensure_multimesh(&mut self) -> Gd<MultiMesh> {
+        if let Some(mm) = self.base().get_multimesh() {
+            return mm;
+        }
+    
+        let mut mm = MultiMesh::new_gd();
+    
+        mm.set_transform_format(
+            godot::classes::multi_mesh::TransformFormat::TRANSFORM_2D,
+        );
+    
+        self.base_mut().set_multimesh(&mm);
+    
+        mm
+    }
+
     #[func]
     pub fn reinit(&mut self) {
         self.ghost_tree.reset();
         self.root_node = self.ghost_tree.create_root();
+    }
+
+    #[func]
+    pub fn clear_kernel(&mut self) {
+        self.k_type = -1;
+        self.kernel = None;
+        self.update_mesh_for_kernel();
+        self.reinit();
     }
 
     #[func]
@@ -80,6 +96,10 @@ impl FractalTreeOptimized {
     #[func]
     pub fn update_mesh_for_kernel(&mut self) {
         let Some(kernel) = &self.kernel else {
+            // set the Mesh to an empty one, if there currently is one
+            let mut mm = self.ensure_multimesh();
+            let mesh = ArrayMesh::new_gd();
+            mm.set_mesh(&mesh.upcast::<Mesh>());
             return;
         };
 
@@ -95,12 +115,10 @@ impl FractalTreeOptimized {
 
         if let Some(mesh) = line_mesh {
             // Get the existing MultiMesh resource
-            let mm = self.base().get_multimesh();
+            let mut mm = self.ensure_multimesh();
 
             // Mutate its mesh property
-            if let Some(mut mm) = mm {
-                mm.set_mesh(&mesh.upcast::<Mesh>());
-            }
+            mm.set_mesh(&mesh.upcast::<Mesh>());
         }
 
         self.update_multimesh_transforms();
@@ -215,11 +233,7 @@ impl FractalTreeOptimized {
                 self.time,
             );
 
-        let Some(mut mm) =
-            self.base().get_multimesh()
-        else {
-            return;
-        };
+        let mut mm = self.ensure_multimesh();
 
         self.ghost_tree.write_to_multimesh(&mut mm);
     }
@@ -234,12 +248,11 @@ impl FractalTreeOptimized {
         self.k_type = rng.randi_range(0, 7);
 
         let mut kernel = FracKernel::new_gd();
+        let mut k = kernel.bind_mut();
 
         match self.k_type {
             0 => {
                 // two double segment arms: arching sideways
-                let mut k = kernel.bind_mut();
-
                 k.add_point(Vector2::new(-20.0, -50.0));
                 k.add_point(Vector2::new(-70.0, -110.0));
 
@@ -253,8 +266,6 @@ impl FractalTreeOptimized {
 
             1 => {
                 // two double segment arms: crossing
-                let mut k = kernel.bind_mut();
-
                 k.add_point(Vector2::new(0.0, -50.0));
                 k.add_point(Vector2::new(-50.0, -100.0));
                 k.add_point(Vector2::new(5.0, -160.0));
@@ -269,8 +280,6 @@ impl FractalTreeOptimized {
 
             2 => {
                 // one double, one single segment arm: arching up
-                let mut k = kernel.bind_mut();
-
                 k.add_point(Vector2::new(-10.0, -110.0));
                 k.add_point(Vector2::new(-30.0, -130.0));
                 k.add_point(Vector2::new(-40.0, -190.0));
@@ -281,8 +290,6 @@ impl FractalTreeOptimized {
 
             3 => {
                 // three single segment arms: arching up (middle straight)
-                let mut k = kernel.bind_mut();
-
                 k.add_point(Vector2::new(0.0, -60.0));
 
                 let _branch2 =
@@ -297,8 +304,6 @@ impl FractalTreeOptimized {
 
             4 => {
                 // one double (straight up, then side), one single segment arm
-                let mut k = kernel.bind_mut();
-
                 k.add_point(Vector2::new(-75.0, -95.0));
 
                 let mut branch0 =
@@ -311,8 +316,6 @@ impl FractalTreeOptimized {
 
             5 => {
                 // start straight, then double single segment arm
-                let mut k = kernel.bind_mut();
-
                 k.add_point(Vector2::new(0.0, -85.0));
                 k.add_point(Vector2::new(-40.0, -135.0));
 
@@ -322,8 +325,6 @@ impl FractalTreeOptimized {
 
             6 => {
                 // three single segment arms with extended middle
-                let mut k = kernel.bind_mut();
-
                 k.add_point(Vector2::new(0.0, -50.0));
 
                 let _branch2 =
@@ -343,8 +344,6 @@ impl FractalTreeOptimized {
 
             _ => {
                 // two double segment arms: arching up
-                let mut k = kernel.bind_mut();
-
                 k.add_point(Vector2::new(-40.0, -50.0));
                 k.add_point(Vector2::new(-70.0, -110.0));
 
@@ -356,9 +355,9 @@ impl FractalTreeOptimized {
                     .add_point(Vector2::new(80.0, -120.0));
             }
         }
+        drop(k);
 
         self.kernel = Some(kernel);
-
         self.update_mesh_for_kernel();
     }
 
@@ -367,13 +366,14 @@ impl FractalTreeOptimized {
     pub fn detach_closest_subtree_at(&mut self, local_pos: Vector2) -> Option<Gd<FractalTreeOptimized>> {
         if let Some(idx) = self.ghost_tree.find_closest_node(local_pos)
         {
-            const DIST_THRESHOLD: f32 = 20.0;
-            let _r: &GhostNode = self.ghost_tree.get_root();
+            const DIST_THRESHOLD: f32 = 25.0;
             let n: &GhostNode = self.ghost_tree.get_node(idx);
             if local_pos.distance_to(n.global_pos()) <= DIST_THRESHOLD {
                 let detached: GhostTree = self.ghost_tree.extract_subtree(idx);
                 let mut detached_fractal_tree = FractalTreeOptimized::new_alloc();
+                let cloned_mm = self.create_multimesh_with_shared_mesh();
                 detached_fractal_tree.bind_mut().ghost_tree = detached;
+                detached_fractal_tree.bind_mut().base_mut().set_multimesh(&cloned_mm?);
                 detached_fractal_tree.bind_mut().k_type = self.k_type;
                 detached_fractal_tree.bind_mut().kernel = self.kernel.clone();
                 return Some(detached_fractal_tree)
@@ -383,5 +383,78 @@ impl FractalTreeOptimized {
     }
 
     #[func]
-    pub fn root_scale(&self) -> Vector2 { return self.ghost_tree.get_root().scale }
+    pub fn add_branch_at_closest_joint(&mut self, local_pos: Vector2) {
+        // rotate the local_pos according to the current root node rotation
+        let root_rot = self.root_rot();
+        let local_pos = local_pos.rotated(-root_rot);
+
+        let kernel = self.kernel.get_or_insert_with(|| {
+            self.k_type = -2;
+            FracKernel::new_gd()
+        });
+
+        // find the closest kernel and arm index relative to the given position
+        let Some((mut k, i)) = kernel.bind().find_closest_point_owner(local_pos) else {
+            return;
+        };
+
+        // compute relative position BEFORE mutable bind
+        let k_pos_rel = kernel
+            .bind()
+            .get_descendant_position(&k)
+            .unwrap();
+        let k_pos_rel = k_pos_rel + k.bind().get_arm_pos(i).unwrap();
+        godot_print!("{}", k_pos_rel);
+
+        {
+            let mut k_bind = k.bind_mut();
+
+            if i == k_bind.arm_len() {
+                k_bind.add_point(local_pos);
+            } else {
+                k_bind.start_child_arm_from(
+                    i as i32,
+                    local_pos - k_pos_rel,
+                );
+            }
+        }
+
+        self.update_mesh_for_kernel();
+    }
+
+    fn create_multimesh_with_shared_mesh(&mut self) -> Option<Gd<MultiMesh>> {
+        let src_mm = self.ensure_multimesh();
+        
+        let mesh = src_mm.get_mesh();
+        
+        let mut new_mm = MultiMesh::new_gd();
+        
+        new_mm.set_transform_format(
+            godot::classes::multi_mesh::TransformFormat::TRANSFORM_2D,
+        );
+        
+        if let Some(mesh) = mesh {
+            new_mm.set_mesh(&mesh);
+        }
+
+        Some(new_mm)
+    }
+
+    #[func]
+    pub fn root_scale(&self) -> Vector2 { 
+        if let Some(r) = self.ghost_tree.get_root() {
+            return  r.scale;
+        } else {
+            Vector2::INF    // return INF as an easily debugable crap value
+        }
+    }
+
+    #[func]
+    pub fn root_rot(&self) -> f32 { 
+        if let Some(r) = self.ghost_tree.get_root() {
+            return  r.rotation;
+        } else {
+            0.
+        }
+    }
 }

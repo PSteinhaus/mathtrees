@@ -179,10 +179,9 @@ anchors_preset = -1
 anchor_top = 0.59400004
 anchor_bottom = 0.59400004
 offset_left = 0.0
-offset_top = -0.32006836
+offset_top = 135.5199
 offset_right = 132.8711
-offset_bottom = 104.67993
-icon = null
+offset_bottom = 240.5199
 
 [connection signal="ready_to_check" from="." to="." method="_on_ready_to_check"]
 [connection signal="delete_pressed" from="VBoxContainer2/VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_delete_pressed"]

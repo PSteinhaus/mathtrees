@@ -33,8 +33,12 @@ impl GhostTree {
         idx
     }
 
-    pub fn get_root(&self) -> &GhostNode {
-        &self.nodes[0]
+    pub fn get_root(&self) -> Option<&GhostNode> {
+        self.nodes.get(0)
+    }
+
+    pub fn get_mut_root(&mut self) -> Option<&mut GhostNode> {
+        self.nodes.get_mut(0)
     }
 
     pub fn add_child(
@@ -375,6 +379,13 @@ impl GhostTree {
             }
         }
 
+        // finally, let the new tree retain its scale, by giving its root its global scale inside the old tree:
+        if let Some(new_root) = new_tree.get_mut_root() {
+            godot_print!("global scale: {}", new_root.global.scale());
+            new_root.scale = new_root.global.scale();
+            new_root.target_scale = new_root.global.scale();
+            new_root.position = Vector2::ZERO;
+        }
         new_tree
     }
 }

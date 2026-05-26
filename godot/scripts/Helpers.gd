@@ -326,9 +326,8 @@ static func gacha_palette(cheat: int = -1) -> Array[Color]:
 		12: return [Color.from_string("#9BC1BC", Color.BLACK), Color.from_string("#F4F1BB", Color.BLACK), Color.from_string("#ED6A5A", Color.BLACK)]
 		13: return [Color.from_string("#1A1423", Color.BLACK), Color.from_string("#3D314A", Color.BLACK), Color.from_string("#684756", Color.BLACK)]
 		14: return [Color.from_string("#524632", Color.BLACK), Color.from_string("#8F7E4F", Color.BLACK), Color.from_string("#C3C49E", Color.BLACK)]
-		15: return [Color.from_string("#A5B5BF", Color.BLACK), Color.from_string("#ABC8C7", Color.BLACK), Color.from_string("#B0A1BA", Color.BLACK)]
-		16: return [Color.from_string("#84B59F", Color.BLACK), Color.from_string("#A3C9A8", Color.BLACK), Color.from_string("#DDD8C4", Color.BLACK)]
-		17: return [Color.from_string("#474350", Color.BLACK), Color.from_string("#F8FFF4", Color.BLACK), Color.from_string("#FCFFEB", Color.BLACK)]
+		15: return [Color.from_string("#84B59F", Color.BLACK), Color.from_string("#A3C9A8", Color.BLACK), Color.from_string("#DDD8C4", Color.BLACK)]
+		16: return [Color.from_string("#474350", Color.BLACK), Color.from_string("#F8FFF4", Color.BLACK), Color.from_string("#FCFFEB", Color.BLACK)]
 		_:  return [Color.from_string("#031D2E", Color.BLACK), Color.from_string("#052335", Color.BLACK), Color.from_string("#000004", Color.BLACK)]
 
 static func relative_luminance(c: Color) -> float:

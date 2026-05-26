@@ -281,6 +281,9 @@ func ziffer_verbal_suffix(pos: int) -> String:
 
 func int_to_verbal(num: int) -> String:
 	
+	if num == 0:
+		return "null"
+	
 	var v_array = ["","","","","","",""]
 	var word = ""
 	
