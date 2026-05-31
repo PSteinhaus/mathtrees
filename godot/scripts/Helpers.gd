@@ -307,28 +307,12 @@ static func generate_palette(style: PaletteStyle) -> Array[Color]:
 static func rotate_hue(hue: int, degrees: int) -> int:
 	return (hue + degrees + 360) % 360
 
-static func gacha_palette(cheat: int = -1) -> Array[Color]:
-	var i: int = randi_range(1,18)
+static func gacha_palette(cheat: int = -1) -> Array:
+	#var i: int = randi_range(0,Palette.palettes.size() - 1)
+	var i: int = Palette.palettes.size() - 1
 	if cheat != -1:
 		i = cheat
-	match i:
-		1:  return [Color.from_string("#0D1B2A", Color.BLACK), Color.from_string("#1B263B", Color.BLACK), Color.from_string("#E0E1DD", Color.BLACK)]
-		2:  return [Color.from_string("#363635", Color.BLACK), Color.from_string("#595A4A", Color.BLACK), Color.from_string("#B0FE76", Color.BLACK)]
-		3:  return [Color.from_string("#93ACB5", Color.BLACK), Color.from_string("#F2F4FF", Color.BLACK), Color.from_string("#6C756B", Color.BLACK)]
-		4:  return [Color.from_string("#96C5F7", Color.BLACK), Color.from_string("#A9D3FF", Color.BLACK), Color.from_string("#F2F4FF", Color.BLACK)]
-		5:  return [Color.from_string("#A23E48", Color.BLACK), Color.from_string("#C33B46", Color.BLACK), Color.from_string("#FF8C42", Color.BLACK)]
-		6:  return [Color.from_string("#548A66", Color.BLACK), Color.from_string("#D3EF96", Color.BLACK), Color.from_string("#9BDB86", Color.BLACK)]
-		7:  return [Color.from_string("#764248", Color.BLACK), Color.from_string("#FFADC6", Color.BLACK), Color.from_string("#DDA3B2", Color.BLACK)]
-		8:  return [Color.from_string("#DDA3B2", Color.BLACK), Color.from_string("#FFADC6", Color.BLACK), Color.from_string("#764248", Color.BLACK)]
-		9:  return [Color.from_string("#470024", Color.BLACK), Color.from_string("#862750", Color.BLACK), Color.from_string("#9D3675", Color.BLACK)]
-		10: return [Color.from_string("#4C5B61", Color.BLACK), Color.from_string("#C5C5C5", Color.BLACK), Color.from_string("#829191", Color.BLACK)]
-		11: return [Color.from_string("#4C5B5C", Color.BLACK), Color.from_string("#FF715B", Color.BLACK), Color.from_string("#F9CB40", Color.BLACK)]
-		12: return [Color.from_string("#9BC1BC", Color.BLACK), Color.from_string("#F4F1BB", Color.BLACK), Color.from_string("#ED6A5A", Color.BLACK)]
-		13: return [Color.from_string("#1A1423", Color.BLACK), Color.from_string("#3D314A", Color.BLACK), Color.from_string("#684756", Color.BLACK)]
-		14: return [Color.from_string("#524632", Color.BLACK), Color.from_string("#8F7E4F", Color.BLACK), Color.from_string("#C3C49E", Color.BLACK)]
-		15: return [Color.from_string("#84B59F", Color.BLACK), Color.from_string("#A3C9A8", Color.BLACK), Color.from_string("#DDD8C4", Color.BLACK)]
-		16: return [Color.from_string("#474350", Color.BLACK), Color.from_string("#F8FFF4", Color.BLACK), Color.from_string("#FCFFEB", Color.BLACK)]
-		_:  return [Color.from_string("#031D2E", Color.BLACK), Color.from_string("#052335", Color.BLACK), Color.from_string("#000004", Color.BLACK)]
+	return Palette.get_palette(i)
 
 static func relative_luminance(c: Color) -> float:
 	var channel = func channel(v: float) -> float:

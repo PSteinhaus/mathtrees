@@ -124,7 +124,7 @@ func _on_ex_zr_20_answer_checked(correct: bool) -> void:
 		%Button_new.visible = true
 		%ButtonCreateTree.visible = true
 
-func set_palette(palette: Array[Color]):
+func set_palette(palette: Array):
 	color_bg = palette[0]
 	color_ground = palette[1]
 	color_tree = palette[2]
