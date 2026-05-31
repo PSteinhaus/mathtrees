@@ -48,12 +48,12 @@ var palette_index: int = 0
 func _ready() -> void:
 	#var palette = Helpers.generate_palette(Helpers.PaletteStyle.values().pick_random())
 	set_palette(Helpers.gacha_palette())
-	#call_deferred("regenerate_kernel")
+	call_deferred("regenerate_kernel")
 	
 	%Button_new.visible = false
 	%ButtonCreateTree.visible = false
 	
-	state = State.CREATING_TREE
+	state = State.GROWING_TREE
 	
 	#var k = FractalTree.FracKernel.new()
 	#k.add_point(Vector2(-40., -50.))

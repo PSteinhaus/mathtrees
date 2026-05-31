@@ -2,6 +2,7 @@
 .godot/
 exports/
 android/
+web/
 
 # Rust
 target/
