@@ -5,12 +5,12 @@ pub struct GhostNode {
     pub parent: Option<usize>,
 
     pub children_start: usize,
-    pub children_count: usize,
+    pub children_count: u16,
 
     // local transform
     pub position: Vector2,
     pub rotation: f32,
-    pub scale: Vector2,
+    pub scale: f32,
 
     // sway
     pub original_rotation: f32,
@@ -20,10 +20,10 @@ pub struct GhostNode {
     pub global: Transform2D,
 
     // growth animation
-    pub target_scale: Vector2,
+    pub target_scale: f32,
     pub growth: f32,
-    pub growth_speed: f32,
 }
+pub(crate) const GROWTH_SPEED: f32 = 0.2;
 
 impl Default for GhostNode {
     fn default() -> Self {
@@ -35,16 +35,15 @@ impl Default for GhostNode {
 
             position: Vector2::ZERO,
             rotation: 0.0,
-            scale: Vector2::ONE,
+            scale: 1.,
 
             original_rotation: 0.0,
             phase_shift: 0.0,
 
             global: Transform2D::IDENTITY,
 
-            target_scale: Vector2::ONE,
+            target_scale: 1.0,
             growth: 1.0,
-            growth_speed: 1.0,
         }
     }
 }

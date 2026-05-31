@@ -2,6 +2,7 @@ extends Exercise
 
 var num1: int
 var num2: int
+var is_zr_20: bool = true
 var is_plus: bool
 var is_uebergang: bool
 static var latest_num1: int = -1
@@ -30,17 +31,17 @@ func check_answer_internal() -> bool:
 
 func new_challenge():
 	$SubmitButton.animateHide()
+	var max_num = 20 if is_zr_20 else 10
 	var accepted = false
 	is_plus = randi_range(0,1) == 0
-	#is_uebergang = randi_range(0,1) == 0
-	is_uebergang = false
+	is_uebergang = false if !is_zr_20 else randi_range(0,3) != 0
 	while !accepted:
 		if is_plus:
-			num1 = randi_range(0,10)
-			num2 = randi_range(0,10 - num1)
+			num1 = randi_range(0,max_num)
+			num2 = randi_range(0,max_num - num1)
 		else:
-			num1 = randi_range(0,10)
-			num2 = randi_range(0, num1)
+			num2 = randi_range(0,max_num) # subtrahend is primary
+			num1 = randi_range(num2, max_num) 
 		if num1 == latest_num1 && num2 == latest_num2:
 			continue
 		if is_uebergang && !((is_plus && num1 < 10 && num1 + num2 >= 10) || (!is_plus && num1 >= 10 && num1 - num2 < 10)):

@@ -68,6 +68,9 @@ impl FractalTreeOptimized {
         mm.set_transform_format(
             godot::classes::multi_mesh::TransformFormat::TRANSFORM_2D,
         );
+
+        mm.set_instance_count(0);
+        //mm.set_use_colors(true);
     
         self.base_mut().set_multimesh(&mm);
     
@@ -146,17 +149,13 @@ impl FractalTreeOptimized {
             rotation: rot,
         
             // start invisible
-            scale: Vector2::ZERO,
+            scale: 0.,
         
             // animation target
             target_scale: final_scale,
         
             // 0 -> 1 over time
             growth: 0.0,
-        
-            // seconds^-1
-            // 0.2 means ~5 seconds
-            growth_speed: 0.2,
         
             original_rotation: rot,
             phase_shift: rot * 2.0,
@@ -171,7 +170,7 @@ impl FractalTreeOptimized {
         
         if node_count == 0 {
             // no root anymore -> recreate it
-            let node = make_ghost_node(Vector2::ZERO, 0., Vector2::ONE);
+            let node = make_ghost_node(Vector2::ZERO, 0., 1.);
             self.ghost_tree.create_root_with(node);
             // and let it grow (animate it)
             // register for animation
@@ -200,7 +199,7 @@ impl FractalTreeOptimized {
                 let rot =
                     kernel_rots.get(i).unwrap();
 
-                let final_scale = Vector2::ONE * 0.7;
+                let final_scale = 0.7;
 
                 let node = make_ghost_node(pos, rot, final_scale);
 
@@ -432,6 +431,9 @@ impl FractalTreeOptimized {
         new_mm.set_transform_format(
             godot::classes::multi_mesh::TransformFormat::TRANSFORM_2D,
         );
+
+        new_mm.set_instance_count(0);
+        //new_mm.set_use_colors(true);
         
         if let Some(mesh) = mesh {
             new_mm.set_mesh(&mesh);
@@ -443,7 +445,7 @@ impl FractalTreeOptimized {
     #[func]
     pub fn root_scale(&self) -> Vector2 { 
         if let Some(r) = self.ghost_tree.get_root() {
-            return  r.scale;
+            return  Vector2{x: r.scale, y: r.scale};
         } else {
             Vector2::INF    // return INF as an easily debugable crap value
         }

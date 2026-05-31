@@ -74,7 +74,7 @@ impl GhostNode {
     pub fn local_transform(&self) -> Transform2D {
         Transform2D::from_angle_scale_skew_origin(
             self.rotation,
-            self.scale,
+            Vector2{ x: self.scale, y: self.scale },
             0.0,
             self.position,
         )
@@ -106,7 +106,7 @@ impl GhostTree {
             let count = node.children_count;
     
             for i in 0..count {
-                let child_idx = self.children[start + i];
+                let child_idx = self.children[start + i as usize];
                 stack.push((child_idx, node.global));
             }
         }
@@ -120,6 +120,11 @@ impl GhostTree {
                 i as i32,
                 node.global,
             );
+
+            // multimesh.set_instance_color(
+            //     i as i32,
+            //     Color::from_rgb(1.0, 0.0, 0.0), // example: red
+            // );
         }
     }
 }
@@ -148,7 +153,7 @@ impl GhostTree {
             let node = &mut self.nodes[idx];
 
             node.growth +=
-                delta * node.growth_speed;
+                delta * crate::ghost_node::GROWTH_SPEED;
 
             if node.growth >= 1.0 {
                 node.growth = 1.0;
@@ -219,7 +224,7 @@ impl GhostTree {
 
             for i in 0..node.children_count {
                 let child_idx =
-                    self.children[node.children_start + i];
+                    self.children[node.children_start + i as usize];
 
                 stack.push(child_idx);
             }
@@ -277,7 +282,7 @@ impl GhostTree {
             for i in 0..old_node.children_count {
                 let old_child =
                     self.children
-                        [old_node.children_start + i];
+                        [old_node.children_start + i as usize];
 
                 if !subtree_set.contains(&old_child) {
                     continue;
@@ -347,7 +352,7 @@ impl GhostTree {
             for i in 0..old_node.children_count {
                 let old_child =
                     old_children
-                        [old_node.children_start + i];
+                        [old_node.children_start + i as usize];
 
                 if subtree_set.contains(&old_child) {
                     continue;
@@ -381,9 +386,10 @@ impl GhostTree {
 
         // finally, let the new tree retain its scale, by giving its root its global scale inside the old tree:
         if let Some(new_root) = new_tree.get_mut_root() {
-            godot_print!("global scale: {}", new_root.global.scale());
-            new_root.scale = new_root.global.scale();
-            new_root.target_scale = new_root.global.scale();
+            let s = new_root.global.scale();
+            godot_print!("global scale: {}", s);
+            new_root.scale = s.x;
+            new_root.target_scale = s.x;
             new_root.position = Vector2::ZERO;
         }
         new_tree
