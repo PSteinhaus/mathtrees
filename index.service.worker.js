@@ -4,9 +4,9 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1780390228|278154808';
+const CACHE_VERSION = '1780400352|220335319';
 /** @type {string} */
-const CACHE_PREFIX = 'Mathtrees-sw-cache-';
+const CACHE_PREFIX = 'Fraktalgarten-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 /** @type {string} */
 const OFFLINE_URL = 'index.offline.html';
