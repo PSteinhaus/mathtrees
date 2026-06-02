@@ -25,6 +25,7 @@ pub struct FractalTreeOptimized {
     ghost_tree: GhostTree,
     root_node: usize,
     time: f32,
+    shrink_factor: f32,
 }
 
 #[godot_api]
@@ -41,6 +42,7 @@ impl IMultiMeshInstance2D for FractalTreeOptimized {
             ghost_tree: tree,
             root_node: root,
             time: 0.0,
+            shrink_factor: 0.7,
         }
     }
 
@@ -81,6 +83,7 @@ impl FractalTreeOptimized {
     pub fn reinit(&mut self) {
         self.ghost_tree.reset();
         self.root_node = self.ghost_tree.create_root();
+        self.shrink_factor = 0.7;
     }
 
     #[func]
@@ -199,7 +202,7 @@ impl FractalTreeOptimized {
                 let rot =
                     kernel_rots.get(i).unwrap();
 
-                let final_scale = 0.7;
+                let final_scale = self.shrink_factor;
 
                 let node = make_ghost_node(pos, rot, final_scale);
 
@@ -244,7 +247,7 @@ impl FractalTreeOptimized {
         let mut rng = RandomNumberGenerator::new_gd();
         rng.randomize();
 
-        self.k_type = rng.randi_range(0, 7);
+        self.k_type = rng.randi_range(0, 12);
 
         let mut kernel = FracKernel::new_gd();
         let mut k = kernel.bind_mut();
@@ -341,6 +344,87 @@ impl FractalTreeOptimized {
                 }
             }
 
+            7 => {
+                // outward then inward
+                k.add_point(Vector2::new(-120.0, -90.0));
+                k.add_point(Vector2::new(-30.0, -195.0));
+            
+                let mut branch0 =
+                    k.start_child_arm_from(0, Vector2::new(120.0, -90.0));
+            
+                branch0
+                    .bind_mut()
+                    .add_point(Vector2::new(30.0, -195.0));
+            }
+
+            8 => {
+                k.add_point(Vector2::new(-150.0, -60.0));
+                k.add_point(Vector2::new(0.0, -210.0));
+            
+                let mut branch0 =
+                    k.start_child_arm_from(0, Vector2::new(150.0, -60.0));
+            
+                branch0
+                    .bind_mut()
+                    .add_point(Vector2::new(0.0, -210.0));
+            }
+
+            9 => {
+                let r = 10.0;
+                // this structure needs the scale to get smaller faster, so adapt it
+                self.shrink_factor = 0.5;
+
+                k.add_point(Vector2::new(0.0, -320.0));
+            
+                for i in 0..5 {
+                    let angle =
+                        -std::f32::consts::FRAC_PI_2 +
+                        i as f32 * std::f32::consts::TAU / 5.0;
+            
+                    let p = Vector2::new(
+                        angle.cos() * r,
+                        angle.sin() * r,
+                    );
+            
+                    k.start_child_arm_from(1, p);
+                }
+            }
+
+            10 => {
+                // extend horizontally first, then curl upward
+            
+                k.add_point(Vector2::new(50.0, -20.0));
+                k.add_point(Vector2::new(90.0, -60.0));
+                k.add_point(Vector2::new(110.0, -130.0));
+                k.add_point(Vector2::new(90.0, -160.0));
+                k.add_point(Vector2::new(70.0, -190.0));
+            
+                let mut branch0 =
+                    k.start_child_arm_from(
+                        2,
+                        Vector2::new(20.0, -30.0),
+                    );
+            
+                {
+                    let mut b = branch0.bind_mut();
+            
+                    b.add_point_rel(Vector2::new(
+                        10.0,
+                        -30.0,
+                    ));
+                }
+            }
+
+            11 => {
+                k.add_point(Vector2::new(120.0, -120.0));
+            
+                let _branch =
+                    k.start_child_arm_from(
+                        1,
+                        Vector2::new(-20.0, -35.0),
+                    );
+            }
+
             _ => {
                 // two double segment arms: arching up
                 k.add_point(Vector2::new(-40.0, -50.0));
@@ -403,7 +487,6 @@ impl FractalTreeOptimized {
             .get_descendant_position(&k)
             .unwrap();
         let k_pos_rel = k_pos_rel + k.bind().get_arm_pos(i).unwrap();
-        godot_print!("{}", k_pos_rel);
 
         {
             let mut k_bind = k.bind_mut();

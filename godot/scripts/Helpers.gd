@@ -308,8 +308,8 @@ static func rotate_hue(hue: int, degrees: int) -> int:
 	return (hue + degrees + 360) % 360
 
 static func gacha_palette(cheat: int = -1) -> Array:
-	#var i: int = randi_range(0,Palette.palettes.size() - 1)
-	var i: int = Palette.palettes.size() - 1
+	var i: int = randi_range(0,Palette.palettes.size() - 1)
+	#var i: int = Palette.palettes.size() - 1
 	if cheat != -1:
 		i = cheat
 	return Palette.get_palette(i)

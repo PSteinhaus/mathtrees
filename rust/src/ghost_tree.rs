@@ -387,7 +387,6 @@ impl GhostTree {
         // finally, let the new tree retain its scale, by giving its root its global scale inside the old tree:
         if let Some(new_root) = new_tree.get_mut_root() {
             let s = new_root.global.scale();
-            godot_print!("global scale: {}", s);
             new_root.scale = s.x;
             new_root.target_scale = s.x;
             new_root.position = Vector2::ZERO;
