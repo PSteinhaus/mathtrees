@@ -96,7 +96,7 @@ impl FractalTreeOptimized {
 
     #[func]
     pub fn node_count(& self) -> u32 {
-        self.ghost_tree.nodes.len() as u32
+        self.ghost_tree.len() as u32
     }
 
     #[func]
@@ -139,83 +139,104 @@ impl FractalTreeOptimized {
         let kernel_leaves = kernel.bind().get_leaves();
         let kernel_rots = kernel.bind().get_leave_rotations();
 
-        let make_ghost_node = |pos, rot, final_scale, slot| GhostNode {
-            parent: None,
-            children_start: 0,
-            children_count: 0,
-            position: pos,
-            rotation: rot,
-            scale: 0.0, // start invisible
-            target_scale: final_scale,
-            growth: 0.0, // 0 -> 1 over time
-            original_rotation: rot,
-            phase_shift: rot * 2.0,
-            global: Transform2D::IDENTITY,
-            kernel_slot: slot,
-        };
+        let make_node =
+            |pos, rot, final_scale, slot| {
+                GhostNode {
+                    kernel_slot: slot,
 
-        let node_count = self.ghost_tree.nodes.len();
-        if node_count == 0 {
-            let node = make_ghost_node(Vector2::ZERO, 0.0, 1.0, None);
-            self.ghost_tree.create_root_with(node);
-            self.ghost_tree.growing_nodes.push(0); // register it for growth animation
+                    position: pos,
+                    rotation: rot,
+                    scale: 0.0,
+
+                    original_rotation: rot,
+                    phase_shift: rot * 2.0,
+
+                    target_scale: final_scale,
+                    growth: 0.0,
+                }
+            };
+
+        // ROOT
+        if self.node_count() == 0 {
+            let root =
+                make_node(
+                    Vector2::ZERO,
+                    0.0,
+                    1.0,
+                    None,
+                );
+
+            let root_idx = self.ghost_tree.create_root_with(root);
+
+            self.ghost_tree.growing_nodes.push(root_idx);
         }
 
-        // collect nodes once
-        let mut nodes_to_process = Vec::new();
-        for i in 0..self.ghost_tree.nodes.len() {
-            nodes_to_process.push(i);
-        }
+        let node_count =
+            self.ghost_tree.len();
 
-        // reusable mask
+        // TEMP MASK
         let mut occupied = vec![false; kernel_leaves.len()];
 
         let mut did_grow = false;
 
-        for node_idx in nodes_to_process {
-            let node = &self.ghost_tree.nodes[node_idx];
+        for node_idx in 0..node_count {
+            // CLEAR MASK
+            occupied.fill(false);
 
-            // reset mask
-            for v in &mut occupied {
-                *v = false;
-            }
+            // MARK USED KERNEL SLOTS
 
-            // mark existing kernel slots
-            for i in 0..node.children_count {
+            let start =
+                self.ghost_tree.children_start[node_idx];
+
+            let count =
+                self.ghost_tree.children_count[node_idx];
+
+            for i in 0..count {
                 let child_idx =
-                    self.ghost_tree.children[node.children_start + i as usize];
+                    self.ghost_tree.children[start + i as usize];
 
-                if let Some(slot) =
-                    self.ghost_tree.nodes[child_idx].kernel_slot
+                if let Some(slot) = self.ghost_tree.kernel_slot[child_idx]
                 {
-                    let slot = usize::from(slot);
+                    let slot = slot as usize;
                     if slot < occupied.len() {
                         occupied[slot] = true;
                     }
                 }
             }
 
-            // spawn missing kernel branches
-            for i in 0..kernel_leaves.len() {
-                if occupied[i] {
+            // SPAWN MISSING BRANCHES
+
+            for slot in 0..kernel_leaves.len() {
+                if occupied[slot] {
                     continue;
                 }
 
-                if self.ghost_tree.nodes.len() >= self.max_nodes as usize {
+                if self.ghost_tree.len() >= self.max_nodes as usize
+                {
                     break;
                 }
 
-                let pos = kernel_leaves.get(i).unwrap();
-                let rot = kernel_rots.get(i).unwrap();
-                let final_scale = self.shrink_factor;
+                let pos = kernel_leaves.get(slot).unwrap();
 
-                let new_node = make_ghost_node(pos, rot, final_scale, Some(i as u16));
+                let rot = kernel_rots.get(slot).unwrap();
 
-                let new_idx =   // add_child appends at the end of the children vec, meaning we need to rebuild the children index
-                    self.ghost_tree.add_child(node_idx, new_node);
+                let node =
+                    make_node(
+                        pos,
+                        rot,
+                        self.shrink_factor,
+                        Some(slot as u16),
+                    );
 
-                // register for animation
-                self.ghost_tree.growing_nodes.push(new_idx);
+                let new_idx =
+                    self.ghost_tree.add_child(
+                        node_idx,
+                        node,
+                    );
+
+                self.ghost_tree
+                    .growing_nodes
+                    .push(new_idx);
 
                 did_grow = true;
             }
@@ -452,8 +473,7 @@ impl FractalTreeOptimized {
         if let Some(idx) = self.ghost_tree.find_closest_node(local_pos)
         {
             const DIST_THRESHOLD: f32 = 25.0;
-            let n: &GhostNode = self.ghost_tree.get_node(idx);
-            if local_pos.distance_to(n.global_pos()) <= DIST_THRESHOLD {
+            if local_pos.distance_to(self.ghost_tree.global_pos(idx)) <= DIST_THRESHOLD {
                 let detached: GhostTree = self.ghost_tree.extract_subtree(idx);
                 let mut detached_fractal_tree = FractalTreeOptimized::new_alloc();
                 let cloned_mm = self.create_multimesh_with_shared_mesh();
