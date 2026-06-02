@@ -217,7 +217,6 @@ impl FractalTreeOptimized {
                 }
 
                 let pos = kernel_leaves.get(slot).unwrap();
-
                 let rot = kernel_rots.get(slot).unwrap();
 
                 let node =

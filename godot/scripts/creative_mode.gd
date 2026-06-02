@@ -77,6 +77,8 @@ func _unhandled_input(event):
 			print("set palette to index: "+str(palette_index))
 		elif event.keycode == KEY_F:
 			regenerate_kernel()
+		elif event.keycode == KEY_G:
+			frac_tree.grow()
 	elif (event is InputEventScreenDrag or (event is InputEventScreenTouch and !event.canceled)) and event.index == 0:
 		var global_touch: Vector2 = camera.screen_to_world(event.position)
 		match state:
