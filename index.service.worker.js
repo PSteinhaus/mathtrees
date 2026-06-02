@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1780400352|220335319';
+const CACHE_VERSION = '1780410343|10211195782';
 /** @type {string} */
 const CACHE_PREFIX = 'Fraktalgarten-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
