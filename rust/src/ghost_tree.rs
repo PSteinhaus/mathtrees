@@ -129,11 +129,11 @@ impl GhostTree {
     }
 }
 
-impl GhostTree {
-    pub fn is_leaf(&self, idx: usize) -> bool {
-        self.nodes[idx].children_count == 0
-    }
-}
+// impl GhostTree {
+//     pub fn is_leaf(&self, idx: usize) -> bool {
+//         self.nodes[idx].children_count == 0
+//     }
+// }
 
 impl GhostTree {
     pub fn update_growth(
@@ -392,5 +392,43 @@ impl GhostTree {
             new_root.position = Vector2::ZERO;
         }
         new_tree
+    }
+
+    pub fn rebuild_children_index(&mut self) {
+        for i in 0..self.nodes.len() {
+            self.nodes[i].children_count = 0;
+        }
+
+        // first pass: count children per parent
+        for child_idx in 0..self.nodes.len() {
+            if let Some(parent) = self.nodes[child_idx].parent {
+                self.nodes[parent].children_count += 1;
+            }
+        }
+        
+        self.children.clear();
+        self.children.reserve(self.nodes.len());
+
+        // temp storage: parent -> start index
+        let mut starts = vec![0usize; self.nodes.len()];
+
+        // compute starts (prefix sum)
+        let mut offset = 0;
+        for (i, node) in self.nodes.iter_mut().enumerate() {
+            node.children_start = offset;
+            offset += usize::from(node.children_count);
+            starts[i] = node.children_start;
+        }
+
+        // second pass: fill children array
+        self.children.resize(offset, 0);
+
+        for (child_idx, node) in self.nodes.iter().enumerate() {
+            if let Some(parent) = node.parent {
+                let pos = starts[parent];
+                self.children[pos] = child_idx;
+                starts[parent] += 1;
+            }
+        }
     }
 }

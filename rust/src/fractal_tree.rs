@@ -136,90 +136,92 @@ impl FractalTreeOptimized {
             return false;
         };
 
-        let kernel_leaves =
-            kernel.bind().get_leaves();
+        let kernel_leaves = kernel.bind().get_leaves();
+        let kernel_rots = kernel.bind().get_leave_rotations();
 
-        let kernel_rots =
-            kernel.bind().get_leave_rotations();
-        
-        let make_ghost_node = |pos, rot, final_scale| GhostNode {
+        let make_ghost_node = |pos, rot, final_scale, slot| GhostNode {
             parent: None,
-        
             children_start: 0,
             children_count: 0,
-        
             position: pos,
             rotation: rot,
-        
-            // start invisible
-            scale: 0.,
-        
-            // animation target
+            scale: 0.0, // start invisible
             target_scale: final_scale,
-        
-            // 0 -> 1 over time
-            growth: 0.0,
-        
+            growth: 0.0, // 0 -> 1 over time
             original_rotation: rot,
             phase_shift: rot * 2.0,
-        
             global: Transform2D::IDENTITY,
+            kernel_slot: slot,
         };
+
+        let node_count = self.ghost_tree.nodes.len();
+        if node_count == 0 {
+            let node = make_ghost_node(Vector2::ZERO, 0.0, 1.0, None);
+            self.ghost_tree.create_root_with(node);
+            self.ghost_tree.growing_nodes.push(0); // register it for growth animation
+        }
+
+        // collect nodes once
+        let mut nodes_to_process = Vec::new();
+        for i in 0..self.ghost_tree.nodes.len() {
+            nodes_to_process.push(i);
+        }
+
+        // reusable mask
+        let mut occupied = vec![false; kernel_leaves.len()];
 
         let mut did_grow = false;
 
-        let node_count =
-            self.ghost_tree.nodes.len();
-        
-        if node_count == 0 {
-            // no root anymore -> recreate it
-            let node = make_ghost_node(Vector2::ZERO, 0., 1.);
-            self.ghost_tree.create_root_with(node);
-            // and let it grow (animate it)
-            // register for animation
-            self.ghost_tree
-            .growing_nodes
-            .push(0);
-        }
+        for node_idx in nodes_to_process {
+            let node = &self.ghost_tree.nodes[node_idx];
 
-        let mut leaves = Vec::new();
-
-        for i in 0..node_count {
-            if self.ghost_tree.is_leaf(i) {
-                leaves.push(i);
+            // reset mask
+            for v in &mut occupied {
+                *v = false;
             }
-        }
 
-        for leaf_idx in leaves {
+            // mark existing kernel slots
+            for i in 0..node.children_count {
+                let child_idx =
+                    self.ghost_tree.children[node.children_start + i as usize];
+
+                if let Some(slot) =
+                    self.ghost_tree.nodes[child_idx].kernel_slot
+                {
+                    let slot = usize::from(slot);
+                    if slot < occupied.len() {
+                        occupied[slot] = true;
+                    }
+                }
+            }
+
+            // spawn missing kernel branches
             for i in 0..kernel_leaves.len() {
-                if self.ghost_tree.nodes.len() as i32 >= self.max_nodes {
+                if occupied[i] {
+                    continue;
+                }
+
+                if self.ghost_tree.nodes.len() >= self.max_nodes as usize {
                     break;
                 }
 
-                let pos =
-                    kernel_leaves.get(i).unwrap();
-
-                let rot =
-                    kernel_rots.get(i).unwrap();
-
+                let pos = kernel_leaves.get(i).unwrap();
+                let rot = kernel_rots.get(i).unwrap();
                 let final_scale = self.shrink_factor;
 
-                let node = make_ghost_node(pos, rot, final_scale);
+                let new_node = make_ghost_node(pos, rot, final_scale, Some(i as u16));
 
-                let node_idx = self.ghost_tree.add_child(
-                    leaf_idx,
-                    node,
-                );
+                let new_idx =   // add_child appends at the end of the children vec, meaning we need to rebuild the children index
+                    self.ghost_tree.add_child(node_idx, new_node);
 
                 // register for animation
-                self.ghost_tree
-                    .growing_nodes
-                    .push(node_idx);
+                self.ghost_tree.growing_nodes.push(new_idx);
 
                 did_grow = true;
             }
         }
 
+        self.ghost_tree.rebuild_children_index();
         self.update_multimesh_transforms();
 
         did_grow

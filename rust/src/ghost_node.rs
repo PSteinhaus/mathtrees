@@ -3,6 +3,7 @@ use godot::prelude::*;
 #[derive(Clone, Copy, Debug)]
 pub struct GhostNode {
     pub parent: Option<usize>,
+    pub kernel_slot: Option<u16>,
 
     pub children_start: usize,
     pub children_count: u16,
@@ -29,6 +30,7 @@ impl Default for GhostNode {
     fn default() -> Self {
         Self {
             parent: None,
+            kernel_slot: None,
 
             children_start: 0,
             children_count: 0,
