@@ -31,6 +31,8 @@ pub struct GhostTree {
 
     // active growth list
     pub growing_nodes: Vec<usize>,
+
+    multimesh_buffer: Vec<f32>,
 }
 
 impl GhostTree {
@@ -55,6 +57,8 @@ impl GhostTree {
             growth: Vec::new(),
 
             growing_nodes: Vec::new(),
+
+            multimesh_buffer: Vec::new(),
         }
     }
 
@@ -82,6 +86,8 @@ impl GhostTree {
         self.growth.clear();
 
         self.growing_nodes.clear();
+
+        self.multimesh_buffer.clear();
     }
 
     fn push_node(
@@ -224,20 +230,35 @@ impl GhostTree {
         }
     }
 
-    pub fn write_to_multimesh(&self, multimesh: &mut Gd<MultiMesh>) {
-        multimesh.set_instance_count(self.len() as i32);
-
-        for (i, g) in self.global.iter().enumerate() {
-            multimesh.set_instance_transform_2d(
-                i as i32,
-                *g,
-            );
-
-            // multimesh.set_instance_color(
-            //     i as i32,
-            //     Color::from_rgb(1.0, 0.0, 0.0), // example: red
-            // );
+    pub fn write_to_multimesh(
+        &mut self,
+        multimesh: &mut Gd<MultiMesh>,
+    ) {
+        let count = self.global.len();
+    
+        multimesh.set_instance_count(count as i32);
+    
+        self.multimesh_buffer.clear();
+        self.multimesh_buffer.reserve(count * 8);
+    
+        for t in &self.global {
+            self.multimesh_buffer.extend_from_slice(&[
+                t.a.x,
+                t.b.x,
+                0.0,
+                t.origin.x,
+    
+                t.a.y,
+                t.b.y,
+                0.0,
+                t.origin.y,
+            ]);
         }
+    
+        let packed =
+            PackedFloat32Array::from(self.multimesh_buffer.as_slice());
+    
+        multimesh.set_buffer(&packed);
     }
 }
 
