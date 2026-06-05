@@ -71,6 +71,13 @@ impl FractalTreeOptimized {
             godot::classes::multi_mesh::TransformFormat::TRANSFORM_2D,
         );
 
+        // set bounding box as huge to avoid culling problems
+        // FIXME: for exploration game mode proper culling might actually improve performance (or instead, maybe fade in/out and set totally visible/invisible when burrowing up/down?)
+        mm.set_custom_aabb(Aabb::from_position_end(
+            Vector3::new(-30000.0, -30000.0, -1.0),
+            Vector3::new(30000.0, 20000.0, 1.0),
+        ));
+
         mm.set_instance_count(0);
         //mm.set_use_colors(true);
     
