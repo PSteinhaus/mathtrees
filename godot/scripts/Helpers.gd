@@ -326,7 +326,6 @@ static func relative_luminance(c: Color) -> float:
 
 	return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
-
 static func contrast_ratio(a: Color, b: Color) -> float:
 	var l1 = relative_luminance(a)
 	var l2 = relative_luminance(b)
@@ -339,3 +338,22 @@ static func contrast_ratio(a: Color, b: Color) -> float:
 
 static func has_good_contrast(a: Color, b: Color, threshold: float = 1.3) -> bool:
 	return contrast_ratio(a, b) >= threshold
+
+static func format_int_eu(value: int) -> String:
+	var negative := value < 0
+	var s := str(abs(value))
+	var result := ""
+
+	while s.length() > 3:
+		result = "." + s.substr(s.length() - 3, 3) + result
+		s = s.substr(0, s.length() - 3)
+
+	result = s + result
+
+	if negative:
+		result = "-" + result
+
+	return result
+
+static func parse_int_eu(text: String) -> int:
+	return text.replace(".", "").to_int()

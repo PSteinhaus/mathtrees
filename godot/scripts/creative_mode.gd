@@ -1,5 +1,10 @@
 extends Node2D
 
+@export var exercise_scenes: Array[PackedScene]
+@export var exercise_names: Array[String]
+var exercise_index := 0
+var exercise: Exercise
+
 @onready var frac_tree: FractalTreeOptimized = %FractalTree
 @onready var bg: MeshInstance2D = %MeshInstanceBG
 @onready var music: AudioStreamPlayer = %Music
@@ -18,12 +23,12 @@ var state: State = State.GROWING_TREE:
 		# things that should always happen
 		match new_state:
 			State.CREATING_TREE:
-				%ExZR20.hide()
+				exercise.hide()
 				%CreateTreeLabel.show()
 				%FractalTree.clear_kernel()
 				%ButtonCreateTreeEnd.show()
 			State.GROWING_TREE:
-				%ExZR20.show()
+				exercise.show()
 				%CreateTreeLabel.hide()
 		# transition specific things
 		match state:
@@ -46,6 +51,9 @@ var color_tree: Color
 var palette_index: int = 0
 
 func _ready() -> void:
+	update_next_button_text()
+	load_current_exercise()
+	
 	#var palette = Helpers.generate_palette(Helpers.PaletteStyle.values().pick_random())
 	set_palette(Helpers.gacha_palette())
 	call_deferred("regenerate_kernel")
@@ -121,7 +129,7 @@ func _on_ex_zr_20_answer_checked(correct: bool) -> void:
 	# get a new challenge
 	if correct:
 		%Pling2.play()
-		%ExZR20.new_challenge()
+		exercise.new_challenge()
 		new_activated = true
 		%Button_new.visible = true
 		%ButtonCreateTree.visible = true
@@ -139,7 +147,7 @@ func set_palette(palette: Array):
 	
 	# also: set the progress bar color!
 	# but for that first check whether the ground color works as a contrast for both the background and the tree
-	var b = %ExZR20.get_progress_bar()
+	var b = exercise.get_progress_bar()
 	var col_final = color_ground.lerp(color_bg, 0.5)
 	if Helpers.has_good_contrast(col_final, color_bg, 1.1) && Helpers.has_good_contrast(col_final, color_tree, 1.4):
 		b.self_modulate = color_ground #color_bg.lightened(0.2)
@@ -206,3 +214,26 @@ func launch_node(node: Node2D):
 
 	# Destroy node after flight
 	tween.chain().tween_callback(node.queue_free)
+
+
+func _on_button_next_pressed() -> void:
+	exercise_index = (exercise_index + 1) % exercise_scenes.size()
+	load_current_exercise()
+	update_next_button_text()
+
+func update_next_button_text() -> void:
+	var next_index := (exercise_index + 1) % exercise_scenes.size()
+	%Button_next.text = exercise_names[next_index]
+
+func load_current_exercise() -> void:
+	# first cleanup
+	var p = get_parent()
+	if exercise && exercise.get_parent() == p && p:
+		exercise.queue_free()
+		
+	exercise = exercise_scenes[exercise_index].instantiate()
+	add_sibling.call_deferred(exercise)
+	exercise.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	exercise.level_changed.connect(_on_ex_zr_20_level_changed)
+	exercise.answer_checked.connect(_on_ex_zr_20_answer_checked)

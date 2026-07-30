@@ -9,7 +9,7 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ewtj6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n8wwr"]
-bg_color = Color(0.82, 0.78064, 0.5248, 1)
+bg_color = Color(1, 1, 1, 0.5176471)
 anti_aliasing = false
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2gsra"]
@@ -39,60 +39,48 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_iueaq")
 
-[node name="BGProgressBar" type="ProgressBar" parent="." unique_id=1091775282]
-unique_name_in_owner = true
+[node name="VBoxContainer2" type="VBoxContainer" parent="." unique_id=1093781508]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = -524.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="BGProgressBar" type="ProgressBar" parent="VBoxContainer2" unique_id=1091775282]
+unique_name_in_owner = true
+show_behind_parent = true
+z_index = -70
+z_as_relative = false
+layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 1
+size_flags_vertical = 3
 theme_override_styles/background = SubResource("StyleBoxEmpty_ewtj6")
 theme_override_styles/fill = SubResource("StyleBoxFlat_n8wwr")
 fill_mode = 3
 show_percentage = false
 script = ExtResource("3_77dnq")
 
-[node name="SubmitButton" parent="." unique_id=1030308578 instance=ExtResource("4_8tg85")]
-visible = false
-layout_mode = 1
-anchors_preset = -1
-anchor_top = 0.59400004
-anchor_bottom = 0.59400004
-offset_left = 0.0
-offset_top = -0.32006836
-offset_right = 132.8711
-offset_bottom = 104.67993
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer2" unique_id=2024277975]
+layout_mode = 2
+size_flags_vertical = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2024277975]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -170.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="InputZiffern" parent="VBoxContainer" unique_id=111868544 instance=ExtResource("5_exla0")]
+[node name="InputZiffern" parent="VBoxContainer2/VBoxContainer" unique_id=111868544 instance=ExtResource("5_exla0")]
 unique_name_in_owner = true
 layout_mode = 2
 theme = ExtResource("6_cfxqs")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=372278585]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer2/VBoxContainer" unique_id=372278585]
 layout_mode = 2
 
-[node name="Panel" type="Panel" parent="VBoxContainer/HBoxContainer" unique_id=1650109191]
+[node name="Panel" type="Panel" parent="VBoxContainer2/VBoxContainer/HBoxContainer" unique_id=1650109191]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.14
 
-[node name="LabelChallenge" type="Label" parent="VBoxContainer/HBoxContainer/Panel" unique_id=1514368886]
+[node name="LabelChallenge" type="Label" parent="VBoxContainer2/VBoxContainer/HBoxContainer/Panel" unique_id=1514368886]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -106,19 +94,19 @@ offset_right = 26.0
 offset_bottom = 62.8125
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 44
+theme_override_font_sizes/font_size = 54
 text = "7 · 8"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel2" type="Panel" parent="VBoxContainer/HBoxContainer" unique_id=603832273]
+[node name="Panel2" type="Panel" parent="VBoxContainer2/VBoxContainer/HBoxContainer" unique_id=603832273]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.25
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/Panel2" unique_id=1757031896]
+[node name="Label" type="Label" parent="VBoxContainer2/VBoxContainer/HBoxContainer/Panel2" unique_id=1757031896]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -136,14 +124,14 @@ text = "="
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel3" type="Panel" parent="VBoxContainer/HBoxContainer" unique_id=47575433]
+[node name="Panel3" type="Panel" parent="VBoxContainer2/VBoxContainer/HBoxContainer" unique_id=47575433]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_2gsra")
 
-[node name="LabelAnswer" type="Label" parent="VBoxContainer/HBoxContainer/Panel3" unique_id=336420336]
+[node name="LabelAnswer" type="Label" parent="VBoxContainer2/VBoxContainer/HBoxContainer/Panel3" unique_id=336420336]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -157,17 +145,17 @@ offset_right = 26.0
 offset_bottom = 62.8125
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 44
+theme_override_font_sizes/font_size = 54
 text = "56"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PanelVerbal" type="Panel" parent="VBoxContainer" unique_id=1063441964]
+[node name="PanelVerbal" type="Panel" parent="VBoxContainer2/VBoxContainer" unique_id=1063441964]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 
-[node name="LabelVerbal" type="Label" parent="VBoxContainer/PanelVerbal" unique_id=1576760857]
+[node name="LabelVerbal" type="Label" parent="VBoxContainer2/VBoxContainer/PanelVerbal" unique_id=1576760857]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -186,7 +174,16 @@ text = "sieben mal acht"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="SubmitButton" parent="." unique_id=1030308578 instance=ExtResource("4_8tg85")]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.59400004
+anchor_bottom = 0.59400004
+offset_top = 152.5199
+offset_right = 134.8711
+offset_bottom = 257.5199
+
 [connection signal="ready_to_check" from="." to="." method="_on_ready_to_check"]
+[connection signal="delete_pressed" from="VBoxContainer2/VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_delete_pressed"]
+[connection signal="number_pressed" from="VBoxContainer2/VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_number_pressed"]
 [connection signal="pressed" from="SubmitButton" to="." method="_on_submit_button_pressed"]
-[connection signal="delete_pressed" from="VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_delete_pressed"]
-[connection signal="number_pressed" from="VBoxContainer/InputZiffern" to="." method="_on_input_ziffern_number_pressed"]

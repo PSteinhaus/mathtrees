@@ -13,6 +13,10 @@ windows.release.x86_64 = "res://../rust/target/release/mathtrees_rust.dll"
 
 android.debug.arm64 =    "res://../rust/android/arm64-v8a/libmathtrees_rust.so"
 android.release.arm64 =  "res://../rust/android/arm64-v8a/libmathtrees_rust.so"
+android.debug.armeabi-v7a   = "res://../rust/android/armeabi-v7a/libmathtrees_rust.so"
+android.release.armeabi-v7a = "res://../rust/android/armeabi-v7a/libmathtrees_rust.so"
+android.debug.arm32   = "res://../rust/android/armeabi-v7a/libmathtrees_rust.so"
+android.release.arm32 = "res://../rust/android/armeabi-v7a/libmathtrees_rust.so"
 
 web.debug.wasm32 =        "res://../rust/target/wasm32-unknown-emscripten/release/mathtrees_rust.wasm"
 web.release.wasm32 =      "res://../rust/target/wasm32-unknown-emscripten/release/mathtrees_rust.wasm"

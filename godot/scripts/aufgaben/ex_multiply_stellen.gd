@@ -1,5 +1,7 @@
 extends Exercise
 
+var is_div: bool
+var dividend: int
 var factor1: int
 var factor2: int
 var co_factor1: int
@@ -27,8 +29,13 @@ func exType() -> ExType:
 
 # TODO: implement
 func check_answer_internal() -> bool:
-	var answer = int(%LabelAnswer.text)
-	return answer == factor1 * co_factor1 * factor2 * co_factor2
+	var answer = Helpers.parse_int_eu(%LabelAnswer.text)
+	var solution
+	if is_div:
+		solution = factor1 * co_factor1 * factor2 * co_factor2 / dividend
+	else:
+		solution = factor1 * co_factor1 * factor2 * co_factor2
+	return answer == solution
 
 func int_to_verbal(num: int) -> String:
 	match num:
@@ -60,6 +67,7 @@ func new_challenge():
 	$SubmitButton.animateHide()
 	var accepted = false
 	while !accepted:
+		is_div = randi_range(0,1) == 0
 		factor1 = randi_range(1,10)
 		factor2 = randi_range(1,10)
 		co_factor1 = 10 ** randi_range(0,3)
@@ -70,43 +78,57 @@ func new_challenge():
 			continue
 		# depending on the level reroll, if the challenge is too hard
 		match level:
-			0:
-				# 1s 2s 10s
-				if (factor1 in [1,2,10] || factor2 in [1,2,10]) && (co_factor1 in [1,10] && co_factor2 in [1,10]):
-					accepted = true
-			1:
-				# 2s 5s
-				if (factor1 in [2,5] || factor2 in [2,5]) && (co_factor1 in [1,10] && co_factor2 in [10,100]):
-					accepted = true
-			2:
-				# 3s, no 1s no 10s
-				if (factor1 in [2,5] || factor2 in [2,5]) && (co_factor1 in [1,10] && co_factor2 in [10,100,1000]):
-					accepted = true
-			3:
-				# 4s, no 1s no 10s
-				if (factor1 in [2,5] || factor2 in [2,5]) && (co_factor1 in [10,100] && co_factor2 in [10,100,1000]):
-					accepted = true
-			4:
-				# 6s, no 1s no 10s
-				if (factor1 in [2,5] || factor2 in [2,5]) && (co_factor1 in [10,100,1000] && co_factor2 in [10,100]):
-					accepted = true
+			#0:
+				## 1s 2s 10s
+				#if (factor1 in [1,2,10] || factor2 in [1,2,10]) && (co_factor1 in [1,10] && co_factor2 in [1,10]):
+					#accepted = true
+			#1:
+				## 2s 5s
+				#if (factor1 in [2,5] || factor2 in [2,5]) && (co_factor1 in [1,10] && co_factor2 in [10,100]):
+					#accepted = true
+			#2:
+				## 3s, no 1s no 10s
+				#if (factor1 in [2,5] || factor2 in [2,5]) && (co_factor1 in [1,10] && co_factor2 in [10,100,1000]):
+					#accepted = true
+			#3:
+				## 4s, no 1s no 10s
+				#if (factor1 in [2,5] || factor2 in [2,5]) && (co_factor1 in [10,100] && co_factor2 in [10,100,1000]):
+					#accepted = true
+			#4:
+				## 6s, no 1s no 10s
+				#if (factor1 in [2,5] || factor2 in [2,5]) && (co_factor1 in [10,100,1000] && co_factor2 in [10,100]):
+					#accepted = true
 			_:
-				accepted = true
+				if (factor1 in [1] || factor2 in [1]) && (co_factor1 in [1,10,100,1000] && co_factor2 in [1,10,100,1000]):
+					accepted = true
 	latest_factor1 = factor1 * co_factor1
 	latest_factor2 = factor2 * co_factor2
-	%LabelChallenge.text = str(latest_factor1) + " · " + str(latest_factor2)
+	if !is_div:
+		%LabelChallenge.text = Helpers.format_int_eu(latest_factor1) + " · " + Helpers.format_int_eu(latest_factor2)
+	else:
+		dividend = latest_factor2 if factor2 == 1 else latest_factor1
+		%LabelChallenge.text = Helpers.format_int_eu(latest_factor1 * latest_factor2) + " : " + Helpers.format_int_eu(dividend)
 	#%LabelVerbal.text = int_to_verbal(factor1) + " mal " + int_to_verbal(factor2)
 	%LabelVerbal.text = "" # FIXME: maybe add this later?
 	%LabelAnswer.text = ""
 
 func _on_input_ziffern_number_pressed(number: int) -> void:
 	var t: String = %LabelAnswer.text
-	if t.length() < 9:
-		%LabelAnswer.text += str(number)
+	var num: int = Helpers.parse_int_eu(t)
+	var raw_t = str(num)
+	if t.length() < 11:
+		raw_t += str(number)
+		num = int(raw_t)
+		%LabelAnswer.text = Helpers.format_int_eu(num)
 	self.ready_to_check.emit(true)
 
 func _on_input_ziffern_delete_pressed() -> void:
-	%LabelAnswer.text = %LabelAnswer.text.left(-1)
+	var t: String = %LabelAnswer.text
+	var num: int = Helpers.parse_int_eu(t)
+	var raw_t = str(num)
+	raw_t = raw_t.left(-1)
+	num = int(raw_t)
+	%LabelAnswer.text = Helpers.format_int_eu(num)
 	if %LabelAnswer.text.is_empty():
 		self.ready_to_check.emit(false)
 
@@ -133,13 +155,4 @@ func set_input_enabled(val: bool):
 
 func progress_for_level_up() -> float:
 	match level:
-		0: return 150.
-		1: return 180.
-		2: return 220.
-		3: return 240.
-		4: return 250.
-		5: return INF
-		6: return INF
-		7: return INF
-		8: return INF
-		_: return INF
+		_: return 140.

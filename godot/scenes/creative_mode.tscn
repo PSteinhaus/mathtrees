@@ -2,9 +2,10 @@
 
 [ext_resource type="Script" uid="uid://c268sthxmtlqh" path="res://scripts/world_creative_mode.gd" id="1_0fupa"]
 [ext_resource type="Script" uid="uid://dad10pasn216o" path="res://scripts/creative_mode.gd" id="1_lslsu"]
+[ext_resource type="PackedScene" uid="uid://i6gbqw570ug1" path="res://scenes/aufgaben/ex_zr_20.tscn" id="3_0fupa"]
 [ext_resource type="Script" uid="uid://dag5jq8aj6ti8" path="res://scripts/camera_2d.gd" id="3_6s3r3"]
-[ext_resource type="PackedScene" uid="uid://i6gbqw570ug1" path="res://scenes/aufgaben/ex_zr_20.tscn" id="3_l7uvt"]
 [ext_resource type="Script" uid="uid://dsrsute6c1tkj" path="res://scripts/debug_label.gd" id="4_6s3r3"]
+[ext_resource type="PackedScene" uid="uid://bvobcniokue2" path="res://scenes/aufgaben/ex_multiply_stellen.tscn" id="4_w1nvi"]
 [ext_resource type="AudioStream" uid="uid://ipbcfpt1fyd5" path="res://resources/audio/chile_filtered.ogg" id="5_rpeom"]
 [ext_resource type="AudioStream" uid="uid://c56aebdw3ct16" path="res://resources/audio/chimes-gong-1.ogg" id="6_6s3r3"]
 [ext_resource type="AudioStream" uid="uid://bswlclv7wuf7s" path="res://resources/audio/chimes-gong-2.ogg" id="7_6s3r3"]
@@ -20,6 +21,8 @@ script = ExtResource("1_0fupa")
 
 [node name="CreativeMode" type="Node2D" parent="." unique_id=543835808]
 script = ExtResource("1_lslsu")
+exercise_scenes = Array[PackedScene]([ExtResource("3_0fupa"), ExtResource("4_w1nvi")])
+exercise_names = Array[String](["20", "·"])
 
 [node name="MeshInstanceBG" type="MeshInstance2D" parent="CreativeMode" unique_id=1919808126]
 unique_name_in_owner = true
@@ -48,13 +51,10 @@ target = Vector2(540, 960)
 follow_speed = 60.0
 zoom_speed = 0.002
 
-[node name="ExZR20" parent="." unique_id=166979938 instance=ExtResource("3_l7uvt")]
-unique_name_in_owner = true
-
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=798951438]
 unique_name_in_owner = true
 stream = ExtResource("5_rpeom")
-volume_db = -13.855
+volume_db = -18.416
 pitch_scale = 0.68
 autoplay = true
 
@@ -128,6 +128,15 @@ offset_bottom = 107.0
 theme_override_font_sizes/font_size = 24
 text = "go"
 
+[node name="Button_next" type="Button" parent="CanvasLayer" unique_id=43829861]
+unique_name_in_owner = true
+offset_left = 22.0
+offset_top = 20.0
+offset_right = 115.0
+offset_bottom = 112.0
+theme_override_font_sizes/font_size = 24
+text = "neu"
+
 [node name="Button_new" type="Button" parent="CanvasLayer" unique_id=1536096543]
 unique_name_in_owner = true
 offset_left = 942.0
@@ -137,8 +146,7 @@ offset_bottom = 104.0
 theme_override_font_sizes/font_size = 24
 text = "neu"
 
-[connection signal="answer_checked" from="ExZR20" to="CreativeMode" method="_on_ex_zr_20_answer_checked"]
-[connection signal="level_changed" from="ExZR20" to="CreativeMode" method="_on_ex_zr_20_level_changed"]
 [connection signal="pressed" from="CanvasLayer/ButtonCreateTree" to="CreativeMode" method="_on_button_create_tree_pressed"]
 [connection signal="pressed" from="CanvasLayer/ButtonCreateTreeEnd" to="CreativeMode" method="_on_button_create_tree_end_pressed"]
+[connection signal="pressed" from="CanvasLayer/Button_next" to="CreativeMode" method="_on_button_next_pressed"]
 [connection signal="pressed" from="CanvasLayer/Button_new" to="CreativeMode" method="_on_button_new_pressed"]
