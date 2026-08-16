@@ -123,7 +123,10 @@ func prune_tree_at(global_touch: Vector2) -> void:
 		launch_node(detached_tree)
 
 func _on_ex_zr_20_level_changed(old_level: int, new_level: int) -> void:
-	frac_tree.grow()
+	# keep level manually fixed on 0 for creative mode
+	exercise.level = 0
+	if new_level > old_level:
+		frac_tree.grow()
 
 func _on_ex_zr_20_answer_checked(correct: bool) -> void:
 	# get a new challenge

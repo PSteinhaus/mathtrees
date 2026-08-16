@@ -23,13 +23,14 @@ var level: int = 0:
 		return level
 	set(val):
 		var old_level = level
-		level = val
-		var b = get_progress_bar()
-		b.max_value = progress_for_level_up()
-		print("set max_value to "+str(progress_for_level_up()))
-		b.value = 0.
-		progress_target = 0.
-		level_changed.emit(old_level, level)
+		if old_level != val:
+			level = val
+			var b = get_progress_bar()
+			b.max_value = progress_for_level_up()
+			print("set max_value to "+str(progress_for_level_up()))
+			b.value = 0.
+			progress_target = 0.
+			level_changed.emit(old_level, level)
 
 var progress_erosion_per_sec: float = 1.8
 var progress_target: float = 0.

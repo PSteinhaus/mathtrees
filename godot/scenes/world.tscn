@@ -38,6 +38,7 @@ script = ExtResource("2_rwgxs")
 metadata/_custom_type_script = "uid://bao8uj5b72l54"
 
 [node name="Camera2D" type="Camera2D" parent="World" unique_id=217393849]
+unique_name_in_owner = true
 position = Vector2(540, 889)
 script = ExtResource("3_4wyf3")
 
@@ -47,9 +48,11 @@ script = ExtResource("4_7r4gi")
 metadata/_custom_type_script = "uid://bgyg384lruwgx"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2022131504]
+unique_name_in_owner = true
 
 [node name="ExZR20" parent="CanvasLayer" unique_id=294089475 instance=ExtResource("10_w7kh3")]
 unique_name_in_owner = true
+visible = false
 
 [node name="DebugLabel" type="Label" parent="CanvasLayer" unique_id=1038649796]
 unique_name_in_owner = true

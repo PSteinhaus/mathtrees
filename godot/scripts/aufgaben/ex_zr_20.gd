@@ -87,4 +87,8 @@ func set_input_enabled(val: bool):
 
 func progress_for_level_up() -> float:
 	match level:
-		_: return 140.
+		0: return 140.
+		1: return 240.
+		2: return 440.
+		_: return 640.
+		

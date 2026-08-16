@@ -1,6 +1,12 @@
 extends Node2D
 class_name World
 
+enum WorldMode {
+	GROWING,
+	EXERCISE,
+}
+var mode := WorldMode.GROWING
+
 var is_touching := false
 @onready var camera: Camera2D = $Camera2D
 var current_touch_screen
@@ -178,13 +184,26 @@ func latest_root_point_local():
 	return current_tree.root.points[-1]
 func latest_root_point_global():
 	return current_tree.root.to_global(latest_root_point_local())
+func finish_current_root() -> void:
+	root_point_map.update_root_when_optimized(current_tree)
+func start_new_root() -> void:
+	energy = 1.0
+
+	current_tree = RT_Tree.new()
+	$RT_Tree.add_rt_child(current_tree, 0)
+	current_tree.add_point(Vector2.ZERO)
+
+	camera.target = $RT_Tree.global_position
 
 func _process(delta: float) -> void:
-	grow_cooldown -= delta
-	if is_touching && grow_cooldown <= 0 && current_tree != null:
-		grow_towards_touch(delta)
+	if mode == WorldMode.GROWING:
+		grow_cooldown -= delta
+		if is_touching && grow_cooldown <= 0 && current_tree != null:
+			grow_towards_touch(delta)
 	# make sure only visible boulders are drawn
 	update_visible_boulders()
+	if exercise != null:
+		let_exercise_follow_cam()
 	
 	Global.debug_print_string = str(current_tree.root.get_point_count()) + "\n" + str($RT_Tree.point_count_with_children())
 
@@ -243,7 +262,13 @@ func grow_towards_touch(delta: float) -> void:
 		energy -= energy_cost
 	
 	current_tree.root.default_color = energy_color()
-	current_tree.add_point(latest_point + grow_vec)
+	
+	var old_tip_global := current_tree.to_global(latest_point)
+	var new_tip_local := latest_point + grow_vec
+	var new_tip_global := current_tree.to_global(new_tip_local)
+
+	current_tree.add_point(new_tip_local)
+	check_root_powerup_intersection(old_tip_global, new_tip_global)
 	grow_cooldown += GROW_DELAY
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -270,14 +295,12 @@ func _update_touch_local(screen_pos: Vector2) -> void:
 	camera.target = latest_point + diff.limit_length(MAX_DIFF)
 
 func _on_button_pressed() -> void:
+	if mode == WorldMode.EXERCISE:
+		leave_exercise_mode()
 	# add the now finished root to the root map:
-	root_point_map.update_root_when_optimized(current_tree)
-	energy = 1.
+	finish_current_root()
 	# create a new root starting from the same start
-	current_tree = RT_Tree.new()
-	$RT_Tree.add_rt_child(current_tree, 0)
-	current_tree.add_point(Vector2.ZERO)
-	camera.target = $RT_Tree.global_position
+	start_new_root()
 
 func _on_button_opt_pressed() -> void:
 	opt_enabled = !opt_enabled
@@ -354,15 +377,91 @@ func add_power_up_node(node: PowerupNode) -> void:
 	add_child(node)
 	power_nodes.push_back(node)
 
-func engage_exercise_from_boulder_powerup(b: BoulderPowerup) -> void:
-	pass
+const POWERUP_ROOT_DISTANCE: float = 40.0
 
+func check_root_powerup_intersection(from_global: Vector2, to_global: Vector2) -> void:
+	for node: PowerupNode in power_nodes:
+		if node.state != PowerupNode.State.PLACED:
+			continue
+		
+		var closest_point := Geometry2D.get_closest_point_to_segment(
+			node.placed_pos,
+			from_global,
+			to_global
+		)
+		
+		if closest_point.distance_squared_to(node.placed_pos) <= POWERUP_ROOT_DISTANCE ** 2:
+			engage_exercise_from_boulder_powerup(node)
+			return
+
+var active_powerup: PowerupNode = null
+
+func engage_exercise_from_boulder_powerup(powerup: PowerupNode) -> void:
+	if mode != WorldMode.GROWING:
+		return
+
+	mode = WorldMode.EXERCISE
+	finish_current_root()
+	active_powerup = powerup
+
+	# Stop the camera following the root's tip and return to the center.
+	var tree_pos = $RT_Tree.global_position
+	camera.target = tree_pos + Vector2(0.0, -150.0)
+	
+	load_current_exercise(powerup.level)
+	powerup.begin_exercise(exercise)
 
 func _on_ex_zr_20_answer_checked(correct: bool) -> void:
 	# get a new challenge
 	if correct:
-		%ExZR20.new_challenge()
+		exercise.new_challenge()
 
+func leave_exercise_mode() -> void:
+	if mode != WorldMode.EXERCISE:
+		return
+	
+	if active_powerup != null:
+		active_powerup.end_exercise()
 
-func _on_ex_zr_20_level_changed(_old_level: int, _new_level: int) -> void:
-	$FractalTree.grow()
+	if exercise != null:
+		exercise.queue_free()
+		exercise = null
+	
+	active_powerup = null
+	start_new_root()
+	mode = WorldMode.GROWING
+
+func _on_ex_zr_20_level_changed(_old_level: int, new_level: int) -> void:
+	if active_powerup == null:
+		return
+	var old_p_level = active_powerup.level
+	active_powerup.level = new_level
+	if new_level > old_p_level:
+		$FractalTree.grow()
+
+var exercise: Exercise = null
+const EXERCISE_SCENE := preload("res://scenes/aufgaben/ex_zr_20.tscn")
+
+func load_current_exercise(initial_level: int) -> void:
+	if exercise != null:
+		exercise.queue_free()
+		exercise = null
+
+	exercise = EXERCISE_SCENE.instantiate()
+	add_sibling.call_deferred(exercise)
+	exercise.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	exercise.level_changed.connect(_on_ex_zr_20_level_changed)
+	exercise.answer_checked.connect(_on_ex_zr_20_answer_checked)
+
+	exercise.level = initial_level
+
+func let_exercise_follow_cam() -> void:
+	if camera == null:
+		return
+	var inv_zoom = Vector2.ONE / camera.zoom
+	exercise.scale = inv_zoom
+	# Desired screen-space position
+	var screen_pos = Vector2.ZERO
+	# Convert screen-space -> world-space
+	exercise.global_position = camera.screen_to_world(screen_pos)
