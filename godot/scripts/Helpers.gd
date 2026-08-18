@@ -56,6 +56,14 @@ static func set_multimesh_transforms_2d(multimesh: MultiMesh, transforms: Array[
 
 #	multimesh.buffer = data
 
+static func set_multimesh_colors(
+	mm: MultiMesh,
+	colors: Array[Color],
+	count: int
+) -> void:
+	for i in range(count):
+		mm.set_instance_color(i, colors[i])
+
 static func get_path_length(points: PackedVector2Array) -> float:
 	var total_length: float = 0.
 	if points.size() < 2:

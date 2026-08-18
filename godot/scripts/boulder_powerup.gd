@@ -23,8 +23,7 @@ func react_to_collision(_p: Vector2):
 func react_to_discovery():
 	#print("discovered: "+str(self.get_instance_id())+" with p_node: "+str(powerup_node.get_instance_id())+" at: "+str(position)+" and "+str(powerup_node.position))
 	state = BoulderPowerup.State.DISCOVERED
-	powerup_node.state = PowerupNode.State.MOVING
-	powerup_node.variant_sprite.self_modulate = Color.WHITE
+	powerup_node.react_to_discovery()
 
 static func mmi_index_range() -> Vector2i:
 	return Vector2i(VARIANT_COUNT, 2 * VARIANT_COUNT - 1)

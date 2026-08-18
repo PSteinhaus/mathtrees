@@ -32,10 +32,19 @@ func _init(variant: PowerupVariant, b: BoulderPowerup) -> void:
 	boulder = b
 	boulder_sprite = Sprite2D.new()
 	boulder_sprite.texture = load("res://sprites/small_boulder.png")
-	boulder_sprite.self_modulate = Color(0.1, 0.1, 0.3, 1.0)
 	add_child(boulder_sprite)
 	set_variant(variant)
-	variant_sprite.self_modulate = Color.BLACK
+	set_colors(b.color, Color.BLACK, Color.WHITE)
+
+var boulder_color : Color
+var background_color : Color
+var highlight_color : Color
+func set_colors(boulder_c: Color, background_c: Color, highlight_c: Color) -> void:
+	boulder_color = boulder_c
+	boulder_sprite.self_modulate = boulder_c
+	background_color = background_c
+	variant_sprite.self_modulate = background_c
+	highlight_color = highlight_c
 
 func cleanup_variant() -> void:
 	if variant_sprite != null:
@@ -49,6 +58,10 @@ func set_variant(variant: PowerupVariant) -> void:
 	variant_sprite.texture = variant_to_texture(variant)
 	#variant_sprite.self_modulate = Color.BLACK
 	add_child(variant_sprite)
+
+func react_to_discovery():
+	state = State.MOVING
+	variant_sprite.self_modulate = highlight_color
 
 func begin_exercise(exercise: Exercise) -> void:
 	if active_exercise != null:

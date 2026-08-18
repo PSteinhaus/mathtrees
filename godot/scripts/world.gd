@@ -32,7 +32,7 @@ const ENERGY_DRAIN_PER_LENGTH: float = 0.0004
 func energy_grow_factor() -> float:
 	return 1 - ((1 - energy) * 0.98) ** 1.5
 func energy_color() -> Color:
-	return lerp(Color.DIM_GRAY, Color.WHITE, energy)
+	return lerp(tree_color, background_color, energy)
 
 # TODO: use this
 var to_merge_indices = []
@@ -175,7 +175,9 @@ func _ready() -> void:
 	#tween.tween_interval(1.25)
 	#tween.tween_callback($FractalTree.grow)
 	
+	applyPalette(Helpers.gacha_palette())
 	_update_touch_local(camera.get_screen_center_position())
+	current_tree.root.default_color = energy_color()
 
 func set_root_point_global(index: int, p: Vector2):
 	var p_local = current_tree.to_local(p)
@@ -279,6 +281,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			_update_touch_local(touch_event.position)
 		else:
 			is_touching = false
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_P:
+			applyPalette(Helpers.gacha_palette())
 
 	elif event is InputEventScreenDrag and is_touching:
 		_update_touch_local(event.position)
@@ -465,3 +470,42 @@ func let_exercise_follow_cam() -> void:
 	var screen_pos = Vector2.ZERO
 	# Convert screen-space -> world-space
 	exercise.global_position = camera.screen_to_world(screen_pos)
+
+# Base palette colors
+var palette: Array = Helpers.gacha_palette()
+var background_color: Color 
+var mesh_bg_color: Color
+var tree_color: Color
+var tree_secondary_color: Color
+
+func applyPalette(new_palette: Array = []) -> void:
+	# Get a palette if none was explicitly supplied.
+	if new_palette.is_empty():
+		palette = Helpers.gacha_palette()
+	else:
+		palette = new_palette
+
+	# Base palette colors
+	background_color = palette[0]
+	mesh_bg_color = palette[1]
+	tree_color = palette[2]
+	tree_secondary_color = palette[0].lightened(0.3)
+
+	# Boulder colors
+	var boulder_color: Color = background_color.lightened(0.25) if Helpers.has_good_contrast(mesh_bg_color, background_color.lightened(0.2)) else background_color.darkened(0.2)
+	var powerup_boulder_color: Color = background_color.lightened(0.2) if Helpers.has_good_contrast(mesh_bg_color, background_color.lightened(0.2)) else background_color.darkened(0.25)
+	var powerup_background_color: Color = background_color.darkened(0.16)
+	var powerup_hightlight_color: Color = tree_color.lightened(0.2)
+
+	# Apply global background
+	RenderingServer.set_default_clear_color(background_color)
+	# Apply MeshBG
+	$MeshBG.modulate = mesh_bg_color
+	Boulder.apply_palette(
+		boulder_color,
+		powerup_boulder_color,
+		powerup_background_color,
+		powerup_hightlight_color
+	)
+	%FractalTree.self_modulate = tree_color
+	
